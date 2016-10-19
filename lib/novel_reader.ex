@@ -1,0 +1,2 @@
+defmodule NovelReader do
+end
