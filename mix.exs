@@ -14,7 +14,7 @@ defmodule NovelReader.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :scrape, :floki, :parallel, :timex]]
   end
 
   # Dependencies can be Hex packages:
@@ -27,6 +27,10 @@ defmodule NovelReader.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:scrape, "~> 1.2"}
+    ]
   end
+
+  # TODO: add license
 end

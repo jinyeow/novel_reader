@@ -4,6 +4,7 @@ Read CN/JP/KR translated novels in a desktop app.
 GUI using Electron UI.
 Pull updates from novelupdates.com rss?
 Grab chapters from links and display in app.
+Try erlsom to parse rss feed xml.
 
 ## Installation
 
