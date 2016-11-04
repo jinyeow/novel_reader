@@ -34,7 +34,7 @@ as feed/test feed.
 
   e.g. for Realms In The Firmament, the CSS identifier is "#content"
   So, using Floki:
-    content = Floki(body, "#content")
+    content = Floki.find(body, "#content")
   gives the content of the chapter.
 
 * Then we can format the content by removing "br"s or anything else we don't
@@ -50,7 +50,11 @@ as feed/test feed.
                   for.
 
 * And the final result: 'chapter' should contain the chapter text that we've
-  been looking for. We can output this to terminal/Electron GUI/whatever and
-  read from there.
+  been looking for.
+    chapter_text = chapter
+      |> Enum.filter(&is_binary/1) # filter out all the random extra html bits
+                                   # leave only the string text
 
+  We can output this to terminal/Electron GUI/whatever and
+  read from there.
 
