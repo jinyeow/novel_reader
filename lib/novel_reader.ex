@@ -6,7 +6,7 @@ defmodule NovelReader do
 
     children = [
       # supervisor(Task.Supervisor, [[name: NovelReader.TaskSupervisor]]),
-      # worker(NovelReader.FeedServer, [])
+      worker(NovelReader.NovelUpdates, [])
     ]
 
     opts = [strategy: :one_for_one, name: NovelReader.Supervisor]

@@ -14,7 +14,8 @@ defmodule NovelReader.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :scrape, :floki, :parallel, :timex]]
+    [applications: [:logger, :scrape, :floki, :parallel, :timex],
+     mod: {NovelReader, []}]
   end
 
   # Dependencies can be Hex packages:
