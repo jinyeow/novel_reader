@@ -2,6 +2,8 @@ defmodule NovelReader.NovelUpdates do
   use GenServer
   require Logger
 
+  alias NovelReader.NovelUpdates.ChapterUpdate
+
   @moduledoc """
   Gets chapter updates from Novel Updates feed.
   """
@@ -60,6 +62,11 @@ defmodule NovelReader.NovelUpdates do
     GenServer.call(@name, :updates)
   end
 
+  def parse_feed do
+    updates
+    |> parse_feed([])
+  end
+
   ## Server
 
   def handle_call(:get_updates, _from, {feed_url, _chapters}) do
@@ -87,6 +94,44 @@ defmodule NovelReader.NovelUpdates do
 
   def handle_cast({:update_feed, feed}, {_feed_url, chapters}) do
     {:noreply, {feed, chapters}}
+  end
+
+  ## Private
+
+  # description == "(TRANSLATOR) Series Information: novelupdates url"
+  defp parse_description(description) do
+    Regex.named_captures(
+      ~r/\((?<translator>.+)\) Series Information: (?<series_url>.*)$/,
+      description
+    )
+  end
+
+  # %{description: description, title: title, url: url, pubdate: <DateTime>, tags: []}
+  defp parse_feed([], feed), do: feed
+  defp parse_feed([head|tail], feed) do
+    %{
+      description: description,
+      title: title,
+      url: url,
+      pubdate: date, # TODO parse DateTime into human readable format?
+      tags: tags
+    } = head
+
+    %{
+      "translator" => translator,
+      "series_url" => series_url
+    } = parse_description(description)
+
+    parse_feed(tail, feed ++ [
+      %ChapterUpdate{
+        chapter_url: url,
+        pubdate: date,
+        series_url: series_url,
+        tags: tags,
+        title: title,
+        translator: translator
+      }
+    ])
   end
 end
 
