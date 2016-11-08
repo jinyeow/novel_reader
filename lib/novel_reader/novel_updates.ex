@@ -106,9 +106,36 @@ defmodule NovelReader.NovelUpdates do
     )
   end
 
+  defp parse_chapter_info(title) do
+    %{
+      "chapter"     => chapter,
+      "chapter_end" => chapter_end,
+      "part"        => part,
+      "vol"         => vol
+    } = Regex.named_captures(
+      ~r/(v(?<vol>[0-9]+))?c(?<chapter>[0-9]+)(\-(?<chapter_end>[0-9]*))?\
+      ( part(?<part>[0-9]+))?$/,
+      title
+    )
+    %{
+      "chapter"     => chapter,
+      "chapter_end" => nil_if_empty(chapter_end),
+      "part"        => nil_if_empty(part),
+      "vol"         => nil_if_empty(vol)
+    }
+  end
+
+  defp nil_if_empty(str) do
+    case str do
+      "" -> nil
+      _ -> str
+    end
+  end
+
   # %{description: description, title: title, url: url, pubdate: <DateTime>, tags: []}
   defp parse_feed([], feed), do: feed
   defp parse_feed([head|tail], feed) do
+    # TODO move all the chapter parsing functions into ChapterUpdate module
     %{
       description: description,
       title: title,
@@ -122,14 +149,26 @@ defmodule NovelReader.NovelUpdates do
       "series_url" => series_url
     } = parse_description(description)
 
+    %{
+      "chapter"     => chapter,
+      "chapter_end" => chapter_end,
+      "part"        => part,
+      "vol"         => volume
+    } = parse_chapter_info(title)
+
+    # TODO create a range from chapter to chapter_end; and
+    # TODO change :chapter field to :chapterS @type List
     parse_feed(tail, feed ++ [
       %ChapterUpdate{
+        chapter: chapter |> String.to_integer,
         chapter_url: url,
+        part: part,
         pubdate: date,
         series_url: series_url,
         tags: tags,
         title: title,
-        translator: translator
+        translator: translator,
+        volume: volume
       }
     ])
   end
