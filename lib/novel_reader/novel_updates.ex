@@ -64,6 +64,11 @@ defmodule NovelReader.NovelUpdates do
     end
   end
 
+  def init({feed_url, chapters}) do
+    {_, _, state} = handle_call(:get_updates, self(), {feed_url, chapters})
+    {:ok, state}
+  end
+
   def handle_call(:get_updates, _from, {feed_url, _chapters}) do
     updates = feed_url
     |> Scrape.feed
