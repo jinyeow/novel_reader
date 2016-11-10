@@ -6,6 +6,12 @@ defmodule NovelReader do
 
     children = [
       # supervisor(Task.Supervisor, [[name: NovelReader.TaskSupervisor]]),
+
+      # worker that handles socket requests to the API?
+
+      # worker that handles chapter processing?
+      # or should I send it to the TaskSupervisor?
+
       worker(NovelReader.NovelUpdates, [])
     ]
 

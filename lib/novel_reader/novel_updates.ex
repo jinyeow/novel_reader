@@ -12,17 +12,20 @@ defmodule NovelReader.NovelUpdates do
 
   @name {:global, __MODULE__}
 
-  ## Callbacks
+  ## Client
 
-  def start_link(feed_url \\ @feed) do
-    case GenServer.start_link(__MODULE__, {feed_url, []}, name: @name) do
-      {:ok, pid} ->
-        Logger.info "Started #{__MODULE__}"
-        {:ok, pid}
-      {:error, {:already_started, pid}} ->
-        Logger.info "#{__MODULE__} already started"
-        {:ok, pid}
-    end
+  @doc """
+  Return the feed URL.
+  """
+  def feed do
+    GenServer.call(@name, :feed)
+  end
+
+  @doc """
+  Filter chapters by attribute; defaults to :title.
+  """
+  def filter(attr \\ :title, term) do
+    GenServer.call(@name, {:filter, attr, term})
   end
 
   @doc """
@@ -30,13 +33,6 @@ defmodule NovelReader.NovelUpdates do
   """
   def get_updates do
     GenServer.call(@name, :get_updates)
-  end
-
-  @doc """
-  Filter updates by title.
-  """
-  def filter_updates(title) do
-    GenServer.call(@name, {:filter_updates, title})
   end
 
   @doc """
@@ -49,39 +45,39 @@ defmodule NovelReader.NovelUpdates do
   end
 
   @doc """
-  Return the feed URL.
-  """
-  def feed do
-    GenServer.call(@name, :feed)
-  end
-
-  @doc """
   Return the list of chapter updates last retrieved.
   """
   def updates do
     GenServer.call(@name, :updates)
   end
 
-  def parse_feed do
-    updates
-    |> parse_feed([])
-  end
-
   ## Server
+
+  def start_link(feed_url \\ @feed) do
+    case GenServer.start_link(__MODULE__, {feed_url, []}, name: @name) do
+      {:ok, pid} ->
+        Logger.info "Started #{__MODULE__}"
+        {:ok, pid}
+      {:error, {:already_started, pid}} ->
+        Logger.info "#{__MODULE__} already started"
+        {:ok, pid}
+    end
+  end
 
   def handle_call(:get_updates, _from, {feed_url, _chapters}) do
     updates = feed_url
     |> Scrape.feed
+    |> parse_feed([])
     {:reply, updates, {feed_url, updates}}
   end
 
-  def handle_call({:filter_updates, title}, _from, {_feed_url, chapters} = state) do
-    {:ok, pattern} = Regex.compile(title, "i")
-    filtered_chapters = chapters
-                        |> Enum.filter(fn chapter ->
-                          Regex.match?(pattern, chapter[:title])
-                        end)
-    {:reply, filtered_chapters, state}
+  def handle_call({:filter, attr, term}, _from, {_feed, chapters} = state) do
+    {:ok, pattern} = Regex.compile(term, "i")
+    results = chapters
+              |> Enum.filter(fn chapter ->
+                Regex.match?(pattern, chapter[attr])
+              end)
+    {:reply, results, state}
   end
 
   def handle_call(:feed, _from, {feed_url, _chapters} = state) do
@@ -98,6 +94,8 @@ defmodule NovelReader.NovelUpdates do
 
   ## Private
 
+  # TODO: move these into NovelReader.NovelUpdates.ChapterUpdate ?
+
   # description == "(TRANSLATOR) Series Information: novelupdates url"
   defp parse_description(description) do
     Regex.named_captures(
@@ -113,8 +111,7 @@ defmodule NovelReader.NovelUpdates do
       "part"        => part,
       "vol"         => vol
     } = Regex.named_captures(
-      ~r/(v(?<vol>[0-9]+))?c(?<chapter>[0-9]+)(\-(?<chapter_end>[0-9]*))?\
-      ( part(?<part>[0-9]+))?$/,
+      ~r/(v(?<vol>[0-9]+))?c(?<chapter>[0-9]+)(\-(?<chapter_end>[0-9]*))?( part(?<part>[0-9]+))?$/,
       title
     )
     %{
@@ -125,10 +122,11 @@ defmodule NovelReader.NovelUpdates do
     }
   end
 
+  @spec nil_if_empty(String.t) :: number | nil
   defp nil_if_empty(str) do
     case str do
       "" -> nil
-      _ -> str
+      _ -> str |> String.to_integer
     end
   end
 
@@ -138,10 +136,10 @@ defmodule NovelReader.NovelUpdates do
     # TODO move all the chapter parsing functions into ChapterUpdate module
     %{
       description: description,
-      title: title,
-      url: url,
-      pubdate: date, # TODO parse DateTime into human readable format?
-      tags: tags
+      title:       title,
+      url:         url,
+      pubdate:     date, # TODO parse DateTime into human readable format?
+      tags:        tags
     } = head
 
     %{
@@ -160,15 +158,16 @@ defmodule NovelReader.NovelUpdates do
     # TODO change :chapter field to :chapterS @type List
     parse_feed(tail, feed ++ [
       %ChapterUpdate{
-        chapter: chapter |> String.to_integer,
+        chapter:     chapter |> String.to_integer,
+        chapter_end: chapter_end,
         chapter_url: url,
-        part: part,
-        pubdate: date,
-        series_url: series_url,
-        tags: tags,
-        title: title,
-        translator: translator,
-        volume: volume
+        part:        part,
+        pubdate:     date,
+        series_url:  series_url,
+        tags:        tags,
+        title:       title,
+        translator:  translator,
+        volume:      volume
       }
     ])
   end
