@@ -38,7 +38,7 @@ defmodule NovelReader.NovelUpdates do
   @doc """
   Retrieve chapter updates from feed.
   """
-  @spec get_updates() :: [%{ChapterUpdate{}}]
+  @spec get_updates() :: [%ChapterUpdate{}]
   def get_updates do
     GenServer.call(@name, :get_updates)
   end
@@ -55,7 +55,7 @@ defmodule NovelReader.NovelUpdates do
   @doc """
   Return the list of chapter updates last retrieved.
   """
-  @spec updates() :: [%{ChapterUpdate{}}]
+  @spec updates() :: [%ChapterUpdate{}]
   def updates do
     GenServer.call(@name, :updates)
   end
