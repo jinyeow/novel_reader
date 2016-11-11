@@ -10,4 +10,5 @@ defmodule NovelReader.Retriever do
   NovelReader--|--GUI := display information using Electron
                |--Retriever := pull chapter text
   """
+
 end

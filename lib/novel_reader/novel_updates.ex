@@ -5,7 +5,12 @@ defmodule NovelReader.NovelUpdates do
   alias NovelReader.NovelUpdates.ChapterUpdate
 
   @moduledoc """
-  Gets chapter updates from Novel Updates feed.
+  Handles scraping the NovelUpdates feed to return a list of information about
+  chapter updates.
+
+  Stores the feed URL and a list of chapter updates as state.
+
+  Able to search chapter updates based on attribute.
   """
 
   @feed "http://www.novelupdates.com/rss.php?uid=12590&unq=571077742187a&type=read"
@@ -17,6 +22,7 @@ defmodule NovelReader.NovelUpdates do
   @doc """
   Return the feed URL.
   """
+  @spec feed() :: String.t
   def feed do
     GenServer.call(@name, :feed)
   end
@@ -24,6 +30,7 @@ defmodule NovelReader.NovelUpdates do
   @doc """
   Filter chapters by attribute; defaults to :title.
   """
+  @spec filter(atom, String.t) :: [%ChapterUpdate{}]
   def filter(attr \\ :title, term) do
     GenServer.call(@name, {:filter, attr, term})
   end
@@ -31,6 +38,7 @@ defmodule NovelReader.NovelUpdates do
   @doc """
   Retrieve chapter updates from feed.
   """
+  @spec get_updates() :: [%{ChapterUpdate{}}]
   def get_updates do
     GenServer.call(@name, :get_updates)
   end
@@ -47,6 +55,7 @@ defmodule NovelReader.NovelUpdates do
   @doc """
   Return the list of chapter updates last retrieved.
   """
+  @spec updates() :: [%{ChapterUpdate{}}]
   def updates do
     GenServer.call(@name, :updates)
   end
@@ -99,82 +108,16 @@ defmodule NovelReader.NovelUpdates do
 
   ## Private
 
-  # TODO: move these into NovelReader.NovelUpdates.ChapterUpdate ?
+  @doc """
+  Iterate over all chapter updates in scraped from the feed.
 
-  # description == "(TRANSLATOR) Series Information: novelupdates url"
-  defp parse_description(description) do
-    Regex.named_captures(
-      ~r/\((?<translator>.+)\) Series Information: (?<series_url>.*)$/,
-      description
-    )
-  end
-
-  defp parse_chapter_info(title) do
-    %{
-      "chapter"     => chapter,
-      "chapter_end" => chapter_end,
-      "part"        => part,
-      "vol"         => vol
-    } = Regex.named_captures(
-      ~r/(v(?<vol>[0-9]+))?c(?<chapter>[0-9]+)(\-(?<chapter_end>[0-9]*))?( part(?<part>[0-9]+))?$/,
-      title
-    )
-    %{
-      "chapter"     => chapter,
-      "chapter_end" => nil_if_empty(chapter_end),
-      "part"        => nil_if_empty(part),
-      "vol"         => nil_if_empty(vol)
-    }
-  end
-
-  @spec nil_if_empty(String.t) :: number | nil
-  defp nil_if_empty(str) do
-    case str do
-      "" -> nil
-      _ -> str |> String.to_integer
-    end
-  end
-
-  # %{description: description, title: title, url: url, pubdate: <DateTime>, tags: []}
+  Convert from the Map given to the ChapterUpdate struct defined in
+  NovelReader.NovelUpdates.ChapterUpdate.
+  """
+  @spec parse_feed([%{}], [%{}]) :: [%ChapterUpdate{}]
   defp parse_feed([], feed), do: feed
   defp parse_feed([head|tail], feed) do
-    # TODO move all the chapter parsing functions into ChapterUpdate module
-    %{
-      description: description,
-      title:       title,
-      url:         url,
-      pubdate:     date, # TODO parse DateTime into human readable format?
-      tags:        tags
-    } = head
-
-    %{
-      "translator" => translator,
-      "series_url" => series_url
-    } = parse_description(description)
-
-    %{
-      "chapter"     => chapter,
-      "chapter_end" => chapter_end,
-      "part"        => part,
-      "vol"         => volume
-    } = parse_chapter_info(title)
-
-    # TODO create a range from chapter to chapter_end; and
-    # TODO change :chapter field to :chapterS @type List
-    parse_feed(tail, feed ++ [
-      %ChapterUpdate{
-        chapter:     chapter |> String.to_integer,
-        chapter_end: chapter_end,
-        chapter_url: url,
-        part:        part,
-        pubdate:     date,
-        series_url:  series_url,
-        tags:        tags,
-        title:       title,
-        translator:  translator,
-        volume:      volume
-      }
-    ])
+    parse_feed(tail, feed ++ [ChapterUpdate.parse_chapter(head)])
   end
 end
 

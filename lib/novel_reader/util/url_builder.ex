@@ -1,4 +1,4 @@
-defmodule NovelReader.Utilities.URLBuilder do
+defmodule NovelReader.Util.URLBuilder do
 
   def build_url(novel_name, chapter, site \\ "") do
     # from novel_name find corresponding site from db/ecto/ets/file
