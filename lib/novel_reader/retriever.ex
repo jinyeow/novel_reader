@@ -1,4 +1,7 @@
 defmodule NovelReader.Retriever do
+
+  alias NovelReader.Retriever
+
   @moduledoc """
   This handles getting actual chapter content/text from the respective
   translation websites (e.g. WuxiaWorld, XianXiaWorld, Gravity Tales).
@@ -13,11 +16,9 @@ defmodule NovelReader.Retriever do
   Retrievers: [WuxiaWorld, XianXiaWorld, Gravity Tales, etc.]
   """
 
-  # TODO: define callbacks for that each retriever needs to implement.
-
   @type url :: String.t
 
-  # @callback get(url) :: {:ok, %HTTPoison.Response{}}
+  @callback get(url) :: {:ok, %HTTPoison.Response{}}
 
   # @spec get(url) :: {:ok, %HTTPoison.Response{}} | {:error, reason}
   # Pass in a ChapterUpdate ?
@@ -25,4 +26,24 @@ defmodule NovelReader.Retriever do
   # Use the corresponding site NovelReader.Retriever.[site].get(url)
   # Should return a Map? Struct? in the general form:
   #     %{content: content} ?? What other keys are needed?
+
+  # TODO consider setting this up as a GenServer to 'cache' chapters
+  # or else setup a separate GenServer to do that - a ChapterCache ??
+  # TODO use a TaskSupervisor ??
+  def get(chapter) do
+    with url <- chapter[:chapter_url],
+         {:ok, retriever} <- chapter[:translator] |> retriever,
+      do: {:ok, retriever.get(url)}
+  end
+
+  defp retriever(translator) do
+    case translator do
+      "Wuxiaworld" -> {:ok, Retriever.WuxiaWorld}
+      "Alyschu" -> {:ok, Retriever.WuxiaWorld}
+      "Thyaeria" -> {:ok, Retriever.WuxiaWorld}
+      "XianXiaWorld" -> {:ok, Retriever.XianXiaWorld}
+      "Gravity Tales" -> {:ok, Retriever.GravityTales}
+      _ -> {:error, :translator_unknown}
+    end
+  end
 end

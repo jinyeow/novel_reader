@@ -1,2 +1,2 @@
-defmodule NovelReader.Format.XianXiaWorld do
+defmodule NovelReader.Retriever.XianXiaWorld do
 end

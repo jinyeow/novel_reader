@@ -1,2 +1,2 @@
-defmodule NovelReader.Format.Gravitytales do
+defmodule NovelReader.Retriever.GravityTales do
 end
