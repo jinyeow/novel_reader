@@ -5,7 +5,7 @@ defmodule NovelReader do
     import Supervisor.Spec, warn: false
 
     children = [
-      # supervisor(Task.Supervisor, [[name: NovelReader.TaskSupervisor]]),
+      supervisor(Task.Supervisor, [[name: NovelReader.TaskSupervisor]]),
 
       # worker that handles socket requests to the API?
       # worker(NovelReader.RequestHandler, [socket]) ?
@@ -26,9 +26,12 @@ defmodule NovelReader do
 
   ## Interface
 
+  # Feed
   defdelegate get_updates, to: NovelReader.NovelUpdates, as: :get_updates
   defdelegate feed, to: NovelReader.NovelUpdates, as: :feed
   defdelegate filter(attr \\ :title, term), to: NovelReader.NovelUpdates, as: :filter
   defdelegate updates, to: NovelReader.NovelUpdates, as: :updates
   defdelegate update_feed(feed), to: NovelReader.NovelUpdates, as: :update_feed
+
+  # Client // RequestHandler
 end
