@@ -19,3 +19,5 @@ erl_crash.dump
 tags
 .agignore
 todo.md
+
+/fixture

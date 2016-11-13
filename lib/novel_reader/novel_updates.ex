@@ -108,12 +108,6 @@ defmodule NovelReader.NovelUpdates do
 
   ## Private
 
-  @doc """
-  Iterate over all chapter updates in scraped from the feed.
-
-  Convert from the Map given to the ChapterUpdate struct defined in
-  NovelReader.NovelUpdates.ChapterUpdate.
-  """
   @spec parse_feed([%{}], [%{}]) :: [%ChapterUpdate{}]
   defp parse_feed([], feed), do: feed
   defp parse_feed([head|tail], feed) do
