@@ -38,9 +38,9 @@ defmodule NovelReader.NovelUpdates do
   @doc """
   Retrieve chapter updates from feed.
   """
-  @spec get_updates(parse \\ :parse) :: [%ChapterUpdate{}]
-  def get_updates do
-    GenServer.call(@name, {:get_updates, parse})
+  @spec get_updates(atom) :: [%ChapterUpdate{}]
+  def get_updates(opt \\ :parse) do
+    GenServer.call(@name, {:get_updates, opt})
   end
 
   @doc """
@@ -81,7 +81,10 @@ defmodule NovelReader.NovelUpdates do
   end
 
   def init({feed_url, chapters}) do
-    {_, _, state} = handle_call(:get_updates, self(), {feed_url, chapters})
+    {_, _, state} = handle_call({:get_updates, :parse},
+                                self(),
+                                {feed_url, chapters}
+                              )
     {:ok, state}
   end
 

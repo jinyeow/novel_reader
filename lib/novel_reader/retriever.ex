@@ -32,8 +32,12 @@ defmodule NovelReader.Retriever do
   # TODO use a TaskSupervisor ??
   def get(chapter) do
     with url <- chapter[:chapter_url],
-         {:ok, retriever} <- chapter[:translator] |> retriever,
-      do: {:ok, retriever.get(url)}
+         {:ok, retriever} <- chapter[:translator] |> retriever do
+      case retriever.get(url) do
+        {:ok, content} -> {:ok, content}
+        {:error, reason} -> {:error, reason}
+      end
+    end
   end
 
   defp retriever(translator) do

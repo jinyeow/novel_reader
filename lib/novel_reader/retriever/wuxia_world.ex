@@ -2,9 +2,14 @@ defmodule NovelReader.Retriever.WuxiaWorld do
   @behaviour NovelReader.Retriever
 
   def get(url) do
-    {:ok, page} = url
-                  |> HTTPoison.get([], [follow_redirect: true])
+    case url |> HTTPoison.get([], [follow_redirect: true]) do
+      {:ok, page} -> find_content(page)
+      {:error, reason} -> {:error, reason}
+    end
 
+  end
+
+  defp find_content(page) do
     %HTTPoison.Response{body: body} = page
     {_tag, attr, _child} = Floki.find(body, ".entry-content a")
                              |> Enum.filter(fn {_tag, _attr, child} ->
