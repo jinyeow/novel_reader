@@ -1,0 +1,2 @@
+defmodule NovelReader.Retriever.MyoniyoniTranslations do
+end

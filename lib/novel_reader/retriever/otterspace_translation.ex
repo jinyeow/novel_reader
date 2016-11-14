@@ -1,0 +1,2 @@
+defmodule NovelReader.Retriever.OtterspaceTranslation do
+end

@@ -42,11 +42,22 @@ defmodule NovelReader.Retriever do
 
   defp retriever(translator) do
     case translator do
-      "Wuxiaworld" -> {:ok, Retriever.WuxiaWorld}
       "Alyschu" -> {:ok, Retriever.WuxiaWorld}
-      "Thyaeria" -> {:ok, Retriever.WuxiaWorld}
-      "XianXiaWorld" -> {:ok, Retriever.XianXiaWorld}
+      "Dreams of Jianghu" -> {:ok, Retriever.DreamsOfJianghu}
       "Gravity Tales" -> {:ok, Retriever.GravityTales}
+      "KobatoChanDaiSuki" -> {:ok, Retriever.KobatoChanDaiSuki}
+      "Myoniyoni Translations" -> {:ok, Retriever.MyoniyoniTranslations}
+      "otterspacetranslation" -> {:ok, Retriever.OtterspaceTranslation}
+      "PiggyBottle Translations" -> {:ok, Retriever.PiggyBottleTranslations}
+      "putttytranslations" -> {:ok, Retriever.PutttyTranslations}
+      "Radiant Translations" -> {:ok, Retriever.RadiantTranslations}
+      "subudai11" -> {:ok, Retriever.Subudai11}
+      "Thyaeria" -> {:ok, Retriever.WuxiaWorld}
+      "Translation Nations" -> {:ok, Retriever.TranslationNations}
+      "volaretranslations" -> {:ok, Retriever.VolareTranslations}
+      "Wuxiaworld" -> {:ok, Retriever.WuxiaWorld}
+      "XianXiaWorld" -> {:ok, Retriever.XianXiaWorld}
+      "Yoraikun Translation" -> {:ok, Retriever.YoraikunTranslation}
       _ -> {:error, :translator_unknown}
     end
   end
