@@ -7,7 +7,7 @@ defmodule NovelReader do
     children = [
       supervisor(Task.Supervisor, [[name: NovelReader.TaskSupervisor]]),
 
-      # worker that handles socket requests to the API?
+      # worker that handles socket requests to the API? or comms with RabbitMQ
       # worker(NovelReader.RequestHandler, [socket]) ?
 
       # worker that handles chapter processing operations: pull, process, return?
@@ -32,6 +32,9 @@ defmodule NovelReader do
   defdelegate filter(attr \\ :title, term), to: NovelReader.NovelUpdates, as: :filter
   defdelegate updates, to: NovelReader.NovelUpdates, as: :updates
   defdelegate update_feed(feed), to: NovelReader.NovelUpdates, as: :update_feed
+
+  # Retrieve
+  defdelegate get_chapter(chapter_update), to: NovelReader.Retriever, as: :get
 
   # Client // RequestHandler
 end
