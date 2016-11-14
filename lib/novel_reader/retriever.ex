@@ -34,8 +34,8 @@ defmodule NovelReader.Retriever do
     with url <- chapter[:chapter_url],
          {:ok, retriever} <- chapter[:translator] |> retriever do
       case retriever.get(url) do
-        {:ok, content} -> {:ok, content}
         {:error, reason} -> {:error, reason}
+        content -> {:ok, content}
       end
     end
   end
