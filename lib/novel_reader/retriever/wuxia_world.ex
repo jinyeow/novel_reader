@@ -6,7 +6,6 @@ defmodule NovelReader.Retriever.WuxiaWorld do
       {:ok, page} -> find_content(page)
       {:error, reason} -> {:error, reason}
     end
-
   end
 
   defp find_content(page) do
