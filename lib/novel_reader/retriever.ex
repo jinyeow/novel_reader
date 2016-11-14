@@ -30,6 +30,9 @@ defmodule NovelReader.Retriever do
   # TODO consider setting this up as a GenServer to 'cache' chapters
   # or else setup a separate GenServer to do that - a ChapterCache ??
   # TODO use a TaskSupervisor ??
+  # TODO implement a cache
+  # TODO check if chapter has already been retrieved and is in the "cache"
+  #      if it is already in the "cache" then return that; else retrieve.
   def get(chapter) do
     with url <- chapter[:chapter_url],
          {:ok, retriever} <- chapter[:translator] |> retriever do
@@ -40,25 +43,26 @@ defmodule NovelReader.Retriever do
     end
   end
 
+  # TODO implement a "default" retriever?
   defp retriever(translator) do
     case translator do
-      "Alyschu" -> {:ok, Retriever.WuxiaWorld}
-      "Dreams of Jianghu" -> {:ok, Retriever.DreamsOfJianghu}
-      "Gravity Tales" -> {:ok, Retriever.GravityTales}
-      "KobatoChanDaiSuki" -> {:ok, Retriever.KobatoChanDaiSuki}
-      "Myoniyoni Translations" -> {:ok, Retriever.MyoniyoniTranslations}
-      "otterspacetranslation" -> {:ok, Retriever.OtterspaceTranslation}
+      "Alyschu"                  -> {:ok, Retriever.WuxiaWorld}
+      "Dreams of Jianghu"        -> {:ok, Retriever.DreamsOfJianghu}
+      "Gravity Tales"            -> {:ok, Retriever.GravityTales}
+      "KobatoChanDaiSuki"        -> {:ok, Retriever.KobatoChanDaiSuki}
+      "Myoniyoni Translations"   -> {:ok, Retriever.MyoniyoniTranslations}
+      "otterspacetranslation"    -> {:ok, Retriever.OtterspaceTranslation}
       "PiggyBottle Translations" -> {:ok, Retriever.PiggyBottleTranslations}
-      "putttytranslations" -> {:ok, Retriever.PutttyTranslations}
-      "Radiant Translations" -> {:ok, Retriever.RadiantTranslations}
-      "subudai11" -> {:ok, Retriever.Subudai11}
-      "Thyaeria" -> {:ok, Retriever.WuxiaWorld}
-      "Translation Nations" -> {:ok, Retriever.TranslationNations}
-      "volaretranslations" -> {:ok, Retriever.VolareTranslations}
-      "Wuxiaworld" -> {:ok, Retriever.WuxiaWorld}
-      "XianXiaWorld" -> {:ok, Retriever.XianXiaWorld}
-      "Yoraikun Translation" -> {:ok, Retriever.YoraikunTranslation}
-      _ -> {:error, :translator_unknown}
+      "putttytranslations"       -> {:ok, Retriever.PutttyTranslations}
+      "Radiant Translations"     -> {:ok, Retriever.RadiantTranslations}
+      "subudai11"                -> {:ok, Retriever.Subudai11}
+      "Thyaeria"                 -> {:ok, Retriever.WuxiaWorld}
+      "Translation Nations"      -> {:ok, Retriever.TranslationNations}
+      "volaretranslations"       -> {:ok, Retriever.VolareTranslations}
+      "Wuxiaworld"               -> {:ok, Retriever.WuxiaWorld}
+      "XianXiaWorld"             -> {:ok, Retriever.XianXiaWorld}
+      "Yoraikun Translation"     -> {:ok, Retriever.YoraikunTranslation}
+      _                          -> {:error, :translator_unknown}
     end
   end
 end
