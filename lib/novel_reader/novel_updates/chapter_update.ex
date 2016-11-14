@@ -80,7 +80,7 @@ defmodule NovelReader.NovelUpdates.ChapterUpdate do
 
   defp parse_chapter_info(title) do
     captures = Regex.named_captures(
-      ~r/^(?<title>.*) (v(?<vol>[0-9]+))?c(?<chapter>[0-9]+)(\-(?<chapter_end>[0-9]*))?( part(?<part>[0-9]+))?$/,
+      ~r/^(?<title>.*) (v(?<vol>[0-9]+))?c(?<chapter>[0-9]+)([\-,](?<chapter_end>[0-9]*))*( part(?<part>[0-9]+))?$/,
       title
     )
     %{

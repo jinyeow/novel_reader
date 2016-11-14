@@ -5,6 +5,12 @@ defmodule NovelReader.NovelUpdates.ChapterUpdateTest do
   alias NovelReader.NovelUpdates.ChapterUpdate
 
   # TODO add more tests
+  # TODO test parse_chapter_info parses correctly for:
+  #   v8c9,10,11 <- comma separated,
+  #   v8c9-11    <- hyphen,
+  #   c9 part 10 <- has 'part',
+  #   v8c9       <- has 'volume',
+  #   c9         <- simple 'chapter'
 
   test "is able to update ChapterUpdate attributes" do
     updated_chapter = chapter
