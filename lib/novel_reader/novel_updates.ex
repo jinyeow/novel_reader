@@ -38,9 +38,9 @@ defmodule NovelReader.NovelUpdates do
   @doc """
   Retrieve chapter updates from feed.
   """
-  @spec get_updates() :: [%ChapterUpdate{}]
+  @spec get_updates(parse \\ :parse) :: [%ChapterUpdate{}]
   def get_updates do
-    GenServer.call(@name, :get_updates)
+    GenServer.call(@name, {:get_updates, parse})
   end
 
   @doc """
@@ -58,6 +58,13 @@ defmodule NovelReader.NovelUpdates do
   @spec updates() :: [%ChapterUpdate{}]
   def updates do
     GenServer.call(@name, :updates)
+  end
+
+  @doc """
+  Used for debugging.
+  """
+  def parse_feed(list) do
+    list |> parse_feed([])
   end
 
   ## Server
@@ -78,7 +85,13 @@ defmodule NovelReader.NovelUpdates do
     {:ok, state}
   end
 
-  def handle_call(:get_updates, _from, {feed_url, _chapters}) do
+  def handle_call({:get_updates, :no_parse}, _from, {feed_url, _chapters}) do
+    updates = feed_url
+    |> Scrape.feed
+    {:reply, updates, {feed_url, updates}}
+  end
+
+  def handle_call({:get_updates, :parse}, _from, {feed_url, _chapters}) do
     updates = feed_url
     |> Scrape.feed
     |> parse_feed([])
