@@ -21,9 +21,8 @@ defmodule NovelReader.Retriever.WuxiaWorld do
     {:ok, page} = HTTPoison.get(url, [], [follow_redirect: true])
     %HTTPoison.Response{body: body} = page
 
-    # NOTE currently this returns a big blob of text
-    # TODO I want to get the HTML and transform it into text while keeping the
-    # newlines and spacing, etc.
-    Floki.find(body, ".entry-content p") |> Floki.text
+    {_tag, _attr, content} = Floki.find(body, "div[itemprop='articleBody']")
+                             |> hd
+    content |> Floki.DeepText.get("\n")
   end
 end

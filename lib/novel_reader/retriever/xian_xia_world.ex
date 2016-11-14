@@ -8,11 +8,12 @@ defmodule NovelReader.Retriever.XianXiaWorld do
     end
   end
 
-  # TODO: check that this works, taken from example.txt
   defp find_content(page) do
     %HTTPoison.Response{body: body} = page
     {_tag, _attr, child} = Floki.find(body, "#content") |> hd
 
-    child |> Enum.filter(&is_binary/1)
+    child
+    |> Enum.filter(&is_binary/1)
+    |> Enum.join("\n")
   end
 end
