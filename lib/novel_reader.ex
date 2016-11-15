@@ -17,6 +17,7 @@ defmodule NovelReader do
 
       # worker to keep persistent state?
       # e.g. user settings, cached "retrieved" chapters
+      worker(NovelReader.CacheServer, []),
 
       worker(NovelReader.NovelUpdates, [])
     ]

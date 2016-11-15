@@ -33,6 +33,7 @@ defmodule NovelReader.Retriever do
   #       - prev chapter url
   #       - chapter text
   # TODO update the typespecs as interfaces/functions change
+  # TODO implement a get/1 that fetches the chapter given a direct URL
 
 
   @type url :: String.t
