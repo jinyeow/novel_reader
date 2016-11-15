@@ -13,9 +13,12 @@ defmodule NovelReader.NovelUpdates do
   Able to search chapter updates based on attribute.
   """
 
+  # TODO should I add a timer/{:error, :timeout} to get_updates?
+
   @feed "http://www.novelupdates.com/rss.php?uid=12590&unq=571077742187a&type=read"
 
   @name {:global, __MODULE__}
+
 
   ## Client
 

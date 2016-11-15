@@ -8,6 +8,7 @@ defmodule NovelReader do
       supervisor(Task.Supervisor, [[name: NovelReader.TaskSupervisor]]),
 
       # worker that handles socket requests to the API? or comms with RabbitMQ
+      # Delegates to an ongoing socket connection handler; or a MQ conn ?
       # worker(NovelReader.RequestHandler, [socket]) ?
 
       # worker that handles chapter processing operations: pull, process, return?

@@ -4,35 +4,51 @@ defmodule NovelReader.Retriever do
 
   @moduledoc """
   This handles getting actual chapter content/text from the respective
-  translation websites (e.g. WuxiaWorld, XianXiaWorld, Gravity Tales).
+  translation websites (e.g. WuxiaWorld, XianXiaWorld, Gravity Tales) known as
+  retrievers.
 
-  It should store the chapter in [memory|text|ets] ?
+  ## Example
+      iex> NovelReader.Retriever.retriever("WuxiaWorld")
+      {:ok, Retriever.WuxiaWorld}
+      iex> NovelReader.Retriever.retriever("a0132")
+      {:ok, Retriever.WuxiaWorld}
+      iex> NovelReader.Retriever.retriever("Gravity Tales")
+      {:ok, Retriever.GravityTales}
+      iex> NovelReader.Retriever.retriever("Some Fake Translations")
+      {:error, :translator_unknown}
 
-               |--TaskSupervisor := async tasks ?
-               |--NovelUpdates := communicate with NU and get chapter updates
-  NovelReader--|--GUI := display information using Electron
-               |--Retriever := pull chapter text
-
-  Retrievers: [WuxiaWorld, XianXiaWorld, Gravity Tales, etc.]
   """
 
-  @type url :: String.t
-
-  @callback get(url) :: {:ok, %HTTPoison.Response{}}
-
-  # @spec get(url) :: {:ok, %HTTPoison.Response{}} | {:error, reason}
-  # Pass in a ChapterUpdate ?
-  # Determine from translator or title?
-  # Use the corresponding site NovelReader.Retriever.[site].get(url)
-  # Should return a Map? Struct? in the general form:
-  #     %{content: content} ?? What other keys are needed?
-
   # TODO consider setting this up as a GenServer to 'cache' chapters
-  # or else setup a separate GenServer to do that - a ChapterCache ??
+  #      or else setup a separate GenServer to do that - a ChapterCache ??
+  #      And on startup, pre-load with cached chapters
   # TODO use a TaskSupervisor ??
   # TODO implement a cache
   # TODO check if chapter has already been retrieved and is in the "cache"
   #      if it is already in the "cache" then return that; else retrieve.
+  # TODO have the retriever.get(url) return a Map or ChapterContent struct that
+  #      contains:
+  #       - title
+  #       - next chapter url
+  #       - prev chapter url
+  #       - chapter text
+  # TODO update the typespecs as interfaces/functions change
+
+
+  @type url :: String.t
+  @type translator :: String.t
+
+  @callback get(url) :: String.t
+
+  @doc """
+  Pass in a %ChapterUpdate struct.
+  From the %ChapterUpdate[:translator] determine the site to use.
+
+  Use the corresponding modules callback NovelReader.Retriever.[site].get(url)
+
+  Returns the chapter text.
+  """
+  @spec get(NovelReader.NovelUpdates.ChapterUpdate.t) :: {:ok, String.t} | {:error, any}
   def get(chapter) do
     with url <- chapter[:chapter_url],
          {:ok, retriever} <- chapter[:translator] |> retriever do
@@ -43,8 +59,12 @@ defmodule NovelReader.Retriever do
     end
   end
 
-  # TODO implement a "default" retriever?
-  defp retriever(translator) do
+  # NOTE: should I implement a "default" retriever? or return :error ?
+  @doc """
+  Returns the correct module to use depending on the translator.
+  """
+  @spec retriever(Retriever.translator) :: {:ok, module} | {:error, :translator_unknown}
+  def retriever(translator) do
     case translator do
       "a0132"                    -> {:ok, Retriever.WuxiaWorld}
       "Alyschu"                  -> {:ok, Retriever.WuxiaWorld}
