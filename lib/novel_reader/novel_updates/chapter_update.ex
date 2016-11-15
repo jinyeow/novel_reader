@@ -56,7 +56,7 @@ defmodule NovelReader.NovelUpdates.ChapterUpdate do
             "vol"         => volume
           } <- parse_chapter_info(title),
       do: %ChapterUpdate{
-            chapters:    chapter..chapter_end |> Enum.to_list,
+            chapters:    chapter_range(chapter, chapter_end)
             chapter_url: url,
             part:        part,
             pubdate:     date,
@@ -98,6 +98,16 @@ defmodule NovelReader.NovelUpdates.ChapterUpdate do
     case str do
       "" -> nil
       _ -> str |> String.to_integer
+    end
+  end
+
+  # Returns a list of chapters if fin >= start; otherwise return just start
+  # Solves the issue where Everyone Else Is a Returnee had a 'ch56-4'.
+  @spec chapter_range(non_neg_integer, non_neg_integer) :: list(non_neg_integer)
+  defp chapter_range(start, fin) do
+    case fin > start do
+      true -> start..fin |> Enum.to_list
+      _ -> [start]
     end
   end
 
