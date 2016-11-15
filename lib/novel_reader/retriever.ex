@@ -1,6 +1,7 @@
 defmodule NovelReader.Retriever do
 
   alias NovelReader.Retriever
+  alias NovelReader.CacheServer
 
   @moduledoc """
   This handles getting actual chapter content/text from the respective
@@ -23,9 +24,6 @@ defmodule NovelReader.Retriever do
   #      or else setup a separate GenServer to do that - a ChapterCache ??
   #      And on startup, pre-load with cached chapters
   # TODO use a TaskSupervisor ??
-  # TODO implement a cache
-  # TODO check if chapter has already been retrieved and is in the "cache"
-  #      if it is already in the "cache" then return that; else retrieve.
   # TODO have the retriever.get(url) return a Map or ChapterContent struct that
   #      contains:
   #       - title
@@ -51,12 +49,11 @@ defmodule NovelReader.Retriever do
   """
   @spec get(NovelReader.NovelUpdates.ChapterUpdate.t) :: {:ok, String.t} | {:error, any}
   def get(chapter) do
-    with url <- chapter[:chapter_url],
-         {:ok, retriever} <- chapter[:translator] |> retriever do
-      case retriever.get(url) do
-        {:error, reason} -> {:error, reason}
-        content -> {:ok, content}
-      end
+    case cache_or_retrieve(chapter) do
+      {:error, reason} -> {:error, reason}
+      content ->
+        CacheServer.add(chapter[:title], content)
+        {:ok, content}
     end
   end
 
@@ -90,4 +87,17 @@ defmodule NovelReader.Retriever do
       _                          -> {:error, :translator_unknown}
     end
   end
+
+  # NOTE: Currently 'id' is the chapter title - will change in the future
+  defp cache_or_retrieve(chapter) do
+    id = chapter[:title]
+    url = chapter[:chapter_url]
+    case CacheServer.get(id) do
+      {:ok, content} -> content
+      {:error, :not_in_cache} ->
+        {:ok, retriever} = chapter[:translator] |> retriever
+        retriever.get(url)
+    end
+  end
+
 end
