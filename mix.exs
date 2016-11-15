@@ -1,13 +1,23 @@
 defmodule NovelReader.Mixfile do
   use Mix.Project
 
+  @description """
+  Desktop application that can read a Novel Updates feed and get translated
+  chapters from translation sites.
+  """
+
   def project do
-    [app: :novel_reader,
-     version: "0.1.0",
-     elixir: "~> 1.3",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps()]
+    [
+      app:             :novel_reader,
+      version:         "0.1.0",
+      name:            "Novel Reader",
+      elixir:          "~> 1.3",
+      build_embedded:  Mix.env == :prod,
+      start_permanent: Mix.env == :prod,
+      deps:            deps,
+      description:     @description,
+      package:         package
+    ]
   end
 
   # Configuration for the OTP application
@@ -24,5 +34,11 @@ defmodule NovelReader.Mixfile do
     ]
   end
 
-  # TODO: add license
+  defp package do
+    [
+      maintainers: ["jinyeow"],
+      licenses: ["MIT"],
+      # links: %{"GitHub" => "https://github.com/jinyeow/novel_reader"}
+    ]
+  end
 end
