@@ -25,17 +25,29 @@ defmodule NovelReader do
     Supervisor.start_link(children, opts)
   end
 
-  ## Interface
+  ## Interface ##
 
-  # Feed
-  defdelegate get_updates, to: NovelReader.NovelUpdates, as: :get_updates
+  ## Feed
+
+  # Returns the feed url being used
   defdelegate feed, to: NovelReader.NovelUpdates, as: :feed
+
+  # Filter/Search function based on ChapterUpdate.t attribute
   defdelegate filter(attr \\ :title, term), to: NovelReader.NovelUpdates, as: :filter
+
+  # Refresh the list of updates
+  defdelegate refresh(opts \\ :parse), to: NovelReader.NovelUpdates, as: :get_updates
+
+  # Return the list of updates
   defdelegate updates, to: NovelReader.NovelUpdates, as: :updates
+
+  # Change the feed url being used.
   defdelegate update_feed(feed), to: NovelReader.NovelUpdates, as: :update_feed
 
-  # Retrieve
-  defdelegate get_chapter(chapter_update), to: NovelReader.Retriever, as: :get
+  ## Retrieve
 
-  # Client // RequestHandler
+  # Get the chapter content.
+  defdelegate get(chapter_update), to: NovelReader.Retriever, as: :get
+
+  ## Client // RequestHandler
 end
