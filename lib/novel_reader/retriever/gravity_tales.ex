@@ -16,7 +16,7 @@ defmodule NovelReader.Retriever.GravityTales do
     link = Floki.find(body, ".entry-content a")
            |> Enum.filter(fn elem ->
              Floki.attribute(elem, "href")
-             |> hd =~ ~r/chapter-[0-9]+/
+             |> hd =~ ~r/-chapter-[0-9]+/
            end)
            |> hd
 
@@ -31,7 +31,5 @@ defmodule NovelReader.Retriever.GravityTales do
 
     content
     |> Floki.DeepText.get("\n")
-    # |> Enum.map(fn elem -> Floki.text(elem) <> "\n" end)
-    # |> Enum.join
   end
 end
