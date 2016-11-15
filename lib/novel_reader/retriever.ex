@@ -20,9 +20,6 @@ defmodule NovelReader.Retriever do
 
   """
 
-  # TODO consider setting this up as a GenServer to 'cache' chapters
-  #      or else setup a separate GenServer to do that - a ChapterCache ??
-  #      And on startup, pre-load with cached chapters
   # TODO use a TaskSupervisor ??
   # TODO have the retriever.get(url) return a Map or ChapterContent struct that
   #      contains:
@@ -57,9 +54,9 @@ defmodule NovelReader.Retriever do
     end
   end
 
-  # NOTE: should I implement a "default" retriever? or return :error ?
   @doc """
   Returns the correct module to use depending on the translator.
+  If the translator is unknown, returns an :error.
   """
   @spec retriever(Retriever.translator) :: {:ok, module} | {:error, :translator_unknown}
   def retriever(translator) do
@@ -92,6 +89,8 @@ defmodule NovelReader.Retriever do
   defp cache_or_retrieve(chapter) do
     id = chapter[:title]
     url = chapter[:chapter_url]
+
+    # Check the cache first
     case CacheServer.get(id) do
       {:ok, content} -> content
       {:error, :not_in_cache} ->

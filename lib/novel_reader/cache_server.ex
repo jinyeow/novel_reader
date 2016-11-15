@@ -6,7 +6,13 @@ defmodule NovelReader.CacheServer do
   Contains a 'cache' of recently retrieved chapters.
   """
 
+  # TODO Implement GenServer.init to populate the cache on startup with saved
+  #      chapters from the cache directory
+  # TODO Implement GenServer.terminate to save the downloaded chapters on shutdown
+
   @name {:global, __MODULE__}
+
+  # @cache_dir "$HOME/.novel_reader/cache/"
 
   ## Client
 
@@ -70,10 +76,5 @@ defmodule NovelReader.CacheServer do
 
   def handle_call({:in_cache, id}, _from, cache) do
     {:reply, Map.has_key?(cache, id), cache}
-  end
-
-  # TODO save state before shutdown
-  def terminate(_reason, state) do
-    state
   end
 end
