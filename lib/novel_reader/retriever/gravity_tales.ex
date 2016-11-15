@@ -13,14 +13,16 @@ defmodule NovelReader.Retriever.GravityTales do
   defp find_content(page) do
     %HTTPoison.Response{body: body} = page
 
-    {_tag, attr, _child} = Floki.find(body, ".entry-content a") 
-                             |> Enum.filter(fn elem ->
-                               Floki.text(elem) =~ ~r/^Chapter [0-9]+$/
-                             end) 
-                             |> hd
+    link = Floki.find(body, ".entry-content a")
+           |> Enum.filter(fn elem ->
+             Floki.attribute(elem, "href")
+             |> hd =~ ~r/chapter-[0-9]+/
+           end)
+           |> hd
 
-    {_attr, url} = attr |> hd
-    url = String.replace(url, "../../", @base_url)
+    url = Floki.attribute(link, "href")
+          |> hd
+          |> String.replace("../../", @base_url)
 
     {:ok, page} = HTTPoison.get(url, [], [follow_redirect: true])
     %HTTPoison.Response{body: body} = page
