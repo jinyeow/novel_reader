@@ -56,7 +56,7 @@ defmodule NovelReader.NovelUpdates.ChapterUpdate do
             "vol"         => volume
           } <- parse_chapter_info(title),
       do: %ChapterUpdate{
-            chapters:    chapter_range(chapter, chapter_end)
+            chapters:    chapter_range(chapter, chapter_end),
             chapter_url: url,
             part:        part,
             pubdate:     date,

@@ -46,8 +46,12 @@ defmodule NovelReader.Retriever do
   # TODO implement a "default" retriever?
   defp retriever(translator) do
     case translator do
+      "a0132"                    -> {:ok, Retriever.WuxiaWorld}
       "Alyschu"                  -> {:ok, Retriever.WuxiaWorld}
+      "Aran Translations"        -> {:ok, Retriever.AranTranslations}
+      "ChongMeiTranslations"     -> {:ok, Retriever.ChongMeiTranslations}
       "Dreams of Jianghu"        -> {:ok, Retriever.DreamsOfJianghu}
+      "faktranslations"          -> {:ok, Retriever.FakTranslations}
       "Gravity Tales"            -> {:ok, Retriever.GravityTales}
       "KobatoChanDaiSuki"        -> {:ok, Retriever.KobatoChanDaiSuki}
       "Myoniyoni Translations"   -> {:ok, Retriever.MyoniyoniTranslations}
