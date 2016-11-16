@@ -70,14 +70,17 @@ defmodule NovelReader.Retriever do
       "Gravity Tales"            -> {:ok, Retriever.GravityTales}
       "KobatoChanDaiSuki"        -> {:ok, Retriever.KobatoChanDaiSuki}
       "Myoniyoni Translations"   -> {:ok, Retriever.MyoniyoniTranslations}
+      "Novel Saga"               -> {:ok, Retriever.NovelSaga}
       "otterspacetranslation"    -> {:ok, Retriever.OtterspaceTranslation}
       "PiggyBottle Translations" -> {:ok, Retriever.PiggyBottleTranslations}
       "putttytranslations"       -> {:ok, Retriever.PutttyTranslations}
       "Radiant Translations"     -> {:ok, Retriever.RadiantTranslations}
       "subudai11"                -> {:ok, Retriever.Subudai11}
       "Thyaeria"                 -> {:ok, Retriever.WuxiaWorld}
+      "Thyaeria's Translation"   -> {:ok, Retriever.WuxiaWorld}
       "Translation Nations"      -> {:ok, Retriever.TranslationNations}
       "volaretranslations"       -> {:ok, Retriever.VolareTranslations}
+      "wleltranslations"         -> {:ok, Retriever.WeleTranslations}
       "Wuxiaworld"               -> {:ok, Retriever.WuxiaWorld}
       "XianXiaWorld"             -> {:ok, Retriever.XianXiaWorld}
       "Yoraikun Translation"     -> {:ok, Retriever.YoraikunTranslation}
