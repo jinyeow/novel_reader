@@ -1,6 +1,7 @@
 defmodule NovelReader.Retriever do
 
   alias NovelReader.Retriever
+  alias NovelReader.NovelUpdates.ChapterUpdate
   alias NovelReader.CacheServer
 
   @moduledoc """
@@ -32,8 +33,20 @@ defmodule NovelReader.Retriever do
 
   @type url :: String.t
   @type translator :: String.t
+  @type reason :: atom
 
-  @callback get(url) :: String.t
+  @callback get(thing) :: String.t
+  # TODO do we need another callback for get_from_url/2 ??
+
+  # TODO implement get_from_url/2
+  # @spec get_from_url(url, list) :: {:ok, String.t} | {:error, reason}
+  # def get_from_url(url, opts \\ [force: false]) do
+    # if opts[:force] is true then directly retrieve from web using URL
+    # else:
+    #   check cache
+    #   check files
+    #   then pull from web using URL if :not_in_cache_or_file
+  # end
 
   @doc """
   Pass in a %ChapterUpdate struct.
@@ -45,8 +58,8 @@ defmodule NovelReader.Retriever do
 
   Returns the chapter text.
   """
-  @spec get(NovelReader.NovelUpdates.ChapterUpdate.t) :: {:ok, String.t} | {:error, any}
-  def get(chapter) do
+  @spec get_from_update(ChapterUpdate.t) :: {:ok, String.t} | {:error, any}
+  def get_from_update(chapter) do
     case cache_or_retrieve(chapter) do
       {:error, reason} -> {:error, reason}
       content ->

@@ -48,7 +48,15 @@ defmodule NovelReader do
   ## Retrieve
 
   # Get the chapter content.
-  defdelegate get(chapter_update), to: NovelReader.Retriever, as: :get
+  # defdelegate get(chapter_update), to: NovelReader.Retriever, as: :get_from_update
+  # NOTE we are expecting thing to either be a URL or a ChapterUpdate
+  # TODO test these changes
+  def get(thing) do
+    case String.valid? thing do
+      true -> NovelReader.Retriever.get_from_url thing
+      _ -> NovelReader.Retriever.get_from_update thing
+    end
+  end
 
   ## Client // RequestHandler
 end
