@@ -27,7 +27,6 @@ defmodule NovelReader.Retriever do
   #       - next chapter url
   #       - prev chapter url
   #       - chapter text
-  # TODO update the typespecs as interfaces/functions change
   # TODO implement a get/1 that fetches the chapter given a direct URL
 
 
@@ -41,6 +40,8 @@ defmodule NovelReader.Retriever do
   From the %ChapterUpdate[:translator] determine the site to use.
 
   Use the corresponding modules callback NovelReader.Retriever.[site].get(url)
+
+  Saves newly downloaded chapters to the CacheServer
 
   Returns the chapter text.
   """
@@ -88,13 +89,12 @@ defmodule NovelReader.Retriever do
     end
   end
 
-  # NOTE: Currently 'id' is the chapter title - will change in the future
   defp cache_or_retrieve(chapter) do
-    id = chapter[:title]
+    id  = chapter[:title]
     url = chapter[:chapter_url]
 
-    # Check the cache first
-    case CacheServer.get(id) do
+    # Check the cache first (let the CacheServer check if the chapter is on file)
+    case CacheServer.get(title, chapter) do
       {:ok, content} -> content
       {:error, :not_in_cache} ->
         {:ok, retriever} = chapter[:translator] |> retriever

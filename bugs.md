@@ -10,3 +10,11 @@
   chapters 56..4; instead of ch56 part 4 of the arc.
   I've decided to just ignore it for now.
   This is recorded here for reference later.
+
+* 16/11/16
+  True Martial World chapters 712, 713 skip the announcement post and goes
+  straight to the actual chapters.
+  This messes with my Retrievers.
+  Possible fix may be to skip scraping the announcement post for the chapter link.
+  Instead, pass in the ChapterUpdate struct, and build a URL based off the Retriever
+  and the relevant information, e.g. title, chapter number, etc.
