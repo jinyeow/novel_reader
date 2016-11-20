@@ -35,7 +35,7 @@ defmodule NovelReader.Retriever do
   @type translator :: String.t
   @type reason :: atom
 
-  @callback get(thing) :: String.t
+  @callback get(any) :: String.t
   # TODO do we need another callback for get_from_url/2 ??
 
   # TODO implement get_from_url/2
@@ -103,13 +103,14 @@ defmodule NovelReader.Retriever do
   end
 
   defp cache_or_retrieve(chapter) do
-    id  = chapter[:title]
-    url = chapter[:chapter_url]
+    title = chapter[:title]
+    chap  = chapter[:chapters] |> hd
+    url   = chapter[:chapter_url]
 
     # Check the cache first (let the CacheServer check if the chapter is on file)
-    case CacheServer.get(title, chapter) do
+    case CacheServer.get(title, chap) do
       {:ok, content} -> content
-      {:error, :not_in_cache} ->
+      {:error, :not_cached_or_saved} ->
         {:ok, retriever} = chapter[:translator] |> retriever
         retriever.get(url)
     end

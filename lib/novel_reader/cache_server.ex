@@ -40,9 +40,8 @@ defmodule NovelReader.CacheServer do
   @type id :: String.t
 
   # TODO test this works
-  @home System.get_env("HOME")
-  @novels_dir @home <> "/.novel_reader/novels/"
-  @cache_dir @home <> "/.novel_reader/cache/"
+  @novels_dir System.get_env("HOME") <> "/.novel_reader/novels/"
+  @cache_dir System.get_env("HOME") <> "/.novel_reader/cache/"
 
   ## Client
 
@@ -63,7 +62,7 @@ defmodule NovelReader.CacheServer do
   @doc """
   Return a chapter from the cache.
   """
-  def get(title, id) do
+  def get(title, chapter) do
     GenServer.call(@name, {:get, title, chapter})
   end
 
@@ -137,7 +136,8 @@ defmodule NovelReader.CacheServer do
   end
 
   defp chapter_saved?(title, chapter) do
-    file = @novels_dir <> title <> ".novel/" <> chapter <> ".html"
+    file = System.get_env("HOME") <> "/.novel_reader/" <> title <> ".novel/"
+      <> (chapter |> to_string) <> ".html"
     case File.exists?(file) do
       false -> {:error, :not_cached_or_saved}
       true ->
