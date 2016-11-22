@@ -9,14 +9,18 @@ defmodule NovelReader.Mixfile do
   def project do
     [
       app:             :novel_reader,
-      version:         "0.1.0",
-      name:            "Novel Reader",
+      version:         "0.1.0-dev",
+      deps:            deps(),
+
       elixir:          "~> 1.3",
       build_embedded:  Mix.env == :prod,
       start_permanent: Mix.env == :prod,
-      deps:            deps,
       description:     @description,
-      package:         package
+      package:         package,
+
+      name:            "Novel Reader",
+      docs:            [ main: "NovelReader",
+                         extras: ["README.md"]]
     ]
   end
 
@@ -30,7 +34,8 @@ defmodule NovelReader.Mixfile do
   defp deps do
     [
       {:scrape, "~> 1.2"},
-      {:exvcr, "~> 0.8", only: :test}
+      {:exvcr, "~> 0.8", only: :test},
+      {:ex_doc, "~> 0.14", only: :dev}
     ]
   end
 

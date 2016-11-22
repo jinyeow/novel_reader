@@ -40,7 +40,7 @@ defmodule NovelReader.CacheServer do
   @type id :: String.t
 
   # TODO test this works
-  @novels_dir System.get_env("HOME") <> "/.novel_reader/novels/"
+  @novel_dir System.get_env("HOME") <> "/.novel_reader/novels/"
   @cache_dir System.get_env("HOME") <> "/.novel_reader/cache/"
 
   ## Client
@@ -136,8 +136,7 @@ defmodule NovelReader.CacheServer do
   end
 
   defp chapter_saved?(title, chapter) do
-    file = System.get_env("HOME") <> "/.novel_reader/" <> title <> ".novel/"
-      <> (chapter |> to_string) <> ".html"
+    file = @novel_dir <> title <> ".novel/" <> (chapter |> to_string) <> ".html"
     case File.exists?(file) do
       false -> {:error, :not_cached_or_saved}
       true ->
