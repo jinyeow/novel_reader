@@ -8,16 +8,16 @@ defmodule NovelReader.NovelUpdatesTest do
     HTTPoison.start
   end
 
-  # TODO check that ExVCR is being used correctly
-
   test "it is initialized with the default feed url" do
     assert NovelUpdates.feed == \
       "http://www.novelupdates.com/rss.php?uid=12590&unq=571077742187a&type=read"
   end
 
   test "it is initialized with a list of updates" do
-    assert NovelUpdates.updates |> Enum.count == \
-      NovelUpdates.feed |> Scrape.feed(:minimal) |> Enum.count
+    assert NovelUpdates.updates
+          |> Enum.count == NovelUpdates.feed
+                          |> Scrape.feed(:minimal)
+                          |> Enum.count
 
     assert NovelUpdates.updates |> is_list
   end
@@ -37,8 +37,11 @@ defmodule NovelReader.NovelUpdatesTest do
   test "update feed changes the feed URL to another valid feed URL" do
     s_tier_url = \
       "http://www.novelupdates.com/rss.php?uid=12590&unq=571077742187a&type=1&lid=local"
+
     NovelUpdates.update_feed(s_tier_url)
+
     assert feed_url_valid?
+    assert NovelUpdates.feed == s_tier_url
   end
 
   # TODO add tests for NovelReader.NovelUpdates.filter

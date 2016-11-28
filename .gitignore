@@ -21,3 +21,6 @@ tags
 todo.md
 
 /fixture
+
+.tasks/
+examples/

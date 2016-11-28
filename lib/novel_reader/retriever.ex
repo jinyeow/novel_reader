@@ -2,10 +2,11 @@ defmodule NovelReader.Retriever do
 
   alias NovelReader.Retriever
   alias NovelReader.NovelUpdates.ChapterUpdate
+  alias NovelReader.Model.Chapter
   alias NovelReader.CacheServer
 
   @moduledoc """
-  This handles getting actual chapter content/text from the respective
+  Handles getting actual chapter content/text from the respective
   translation websites (e.g. WuxiaWorld, XianXiaWorld, Gravity Tales) known as
   retrievers.
 
@@ -49,7 +50,7 @@ defmodule NovelReader.Retriever do
   # end
 
   @doc """
-  Pass in a %ChapterUpdate struct.
+  Pass in a %ChapterUpdate{} struct.
   From the %ChapterUpdate[:translator] determine the site to use.
 
   Use the corresponding modules callback NovelReader.Retriever.[site].get(url)
@@ -60,12 +61,31 @@ defmodule NovelReader.Retriever do
   """
   @spec get_from_update(ChapterUpdate.t) :: {:ok, String.t} | {:error, any}
   def get_from_update(chapter) do
-    case cache_or_retrieve(chapter) do
+    case retrieve(chapter) do
       {:error, reason} -> {:error, reason}
       content ->
         CacheServer.add(chapter[:title], content)
         {:ok, content}
     end
+  end
+
+  @doc """
+  Retrieves chapter(s) given a URL.
+
+  If URL points to the novel index, return a List of %Chapter{}.
+  If URL points to one chapter return a %Chapter{}.
+  """
+  @spec get_from_url(url) :: {:ok, [%Chapter{}]} |
+                             {:ok, %Chapter{}} |
+                             {:error, :invalid_url}
+  def get_from_url(url) do
+    if not valid_url?(url) do {:error, :invalid_url} end
+    # TODO finish this.
+  end
+
+  defp valid_url?(url) do
+    uri = URI.parse(url)
+    uri.scheme != nil && uri.host =~ "."
   end
 
   @doc """
@@ -102,7 +122,7 @@ defmodule NovelReader.Retriever do
     end
   end
 
-  defp cache_or_retrieve(chapter) do
+  defp retrieve(chapter) do
     title = chapter[:title]
     chap  = chapter[:chapters] |> hd
     url   = chapter[:chapter_url]
