@@ -1,7 +1,4 @@
-defmodule NovelReader.CacheServer do
-  use GenServer
-  require Logger
-
+defmodule NovelReader.Cache do
   @moduledoc """
   Contains a 'cache' of recently retrieved chapters. In the form of:
     cache = %{
@@ -28,6 +25,9 @@ defmodule NovelReader.CacheServer do
 
   """
 
+  use GenServer
+  require Logger
+
   # TODO update cache format and functions
   # TODO Implement GenServer.init to populate the cache on startup with saved
   #      chapters from the cache directory: load_cache/0
@@ -35,11 +35,10 @@ defmodule NovelReader.CacheServer do
   #      shutdown: save_cache/0
   # TODO Implement load/save_{chapter,novel}/1 to load/save a specific chapter
 
-  @name {:global, __MODULE__}
-
   @type id :: String.t
 
-  # TODO test this works
+  @name {:global, __MODULE__}
+
   @novel_dir System.get_env("HOME") <> "/.novel_reader/novels/"
   @cache_dir System.get_env("HOME") <> "/.novel_reader/cache/"
 

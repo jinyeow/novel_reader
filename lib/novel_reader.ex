@@ -18,7 +18,7 @@ defmodule NovelReader do
       # worker(NovelReader.ReaderServer, []) ?
 
       # Cache
-      worker(NovelReader.CacheServer, []),
+      worker(NovelReader.Cache, []),
 
       # Feed
       worker(NovelReader.NovelUpdates, [])

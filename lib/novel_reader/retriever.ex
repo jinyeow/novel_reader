@@ -1,10 +1,4 @@
 defmodule NovelReader.Retriever do
-
-  alias NovelReader.Retriever
-  alias NovelReader.NovelUpdates.ChapterUpdate
-  alias NovelReader.Model.Chapter
-  alias NovelReader.CacheServer
-
   @moduledoc """
   Handles getting actual chapter content/text from the respective
   translation websites (e.g. WuxiaWorld, XianXiaWorld, Gravity Tales) known as
@@ -22,15 +16,10 @@ defmodule NovelReader.Retriever do
 
   """
 
-  # TODO use a TaskSupervisor ??
-  # TODO have the retriever.get(url) return a Map or ChapterContent struct that
-  #      contains:
-  #       - title
-  #       - next chapter url
-  #       - prev chapter url
-  #       - chapter text
-  # TODO implement a get/1 that fetches the chapter given a direct URL
-
+  alias NovelReader.Retriever
+  alias NovelReader.NovelUpdates.ChapterUpdate
+  alias NovelReader.Model.Chapter
+  alias NovelReader.Cache
 
   @type url :: String.t
   @type translator :: String.t
@@ -55,7 +44,7 @@ defmodule NovelReader.Retriever do
 
   Use the corresponding modules callback NovelReader.Retriever.[site].get(url)
 
-  Saves newly downloaded chapters to the CacheServer
+  Saves newly downloaded chapters to the Cache
 
   Returns the chapter text.
   """
@@ -64,7 +53,7 @@ defmodule NovelReader.Retriever do
     case retrieve(chapter) do
       {:error, reason} -> {:error, reason}
       content ->
-        CacheServer.add(chapter[:title], content)
+        Cache.add(chapter[:title], content)
         {:ok, content}
     end
   end
@@ -128,7 +117,7 @@ defmodule NovelReader.Retriever do
     url   = chapter[:chapter_url]
 
     # Check the cache first (let the CacheServer check if the chapter is on file)
-    case CacheServer.get(title, chap) do
+    case Cache.get(title, chap) do
       {:ok, content} -> content
       {:error, :not_cached_or_saved} ->
         {:ok, retriever} = chapter[:translator] |> retriever

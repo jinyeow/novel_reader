@@ -1,4 +1,14 @@
-defmodule NovelReader.ControllerServer do
+defmodule NovelReader.Controller do
+  @moduledoc """
+  Acts as the medium for the Electron GUI to communicate with the Elixir application
+  through sockets.
+
+  Listens on a loop for 'requests'.
+
+  Returns the requested data for the GUI to display.
+
+  """
+
   use GenServer
   require Logger
 
