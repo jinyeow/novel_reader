@@ -9,16 +9,11 @@ defmodule NovelReader do
     children = [
       supervisor(Task.Supervisor, [[name: NovelReader.TaskSupervisor]]),
 
-      # worker that handles socket requests to the API? or comms with RabbitMQ
-      # Delegates to an ongoing socket connection handler; or a MQ conn ?
-      worker(NovelReader.Controller, []),
-
-      # worker that handles chapter processing operations: pull, process, return?
-      # or should I send it to the TaskSupervisor?
-      # worker(NovelReader.ReaderServer, []) ?
-
       # Cache
       worker(NovelReader.Cache, []),
+
+      # Controls communication between Elixir application and Electron GUI
+      worker(NovelReader.Controller, []),
 
       # Feed
       worker(NovelReader.NovelUpdates, [])
@@ -64,10 +59,9 @@ defmodule NovelReader do
   We are expecting input to either be a URL or a %ChapterUpdate{}
   """
   @spec get(String.t|ChapterUpdate.t) :: {:ok, String.t} | {:error, atom}
-  def get(%ChapterUpdate{} = thing), do: NovelReader.Retriever.get_from_update(thing)
-  def get(url), do: NovelReader.Retriever.get_from_url(url)
-
-  ## Client // RequestHandler
-
-  # TODO
+  def get(%ChapterUpdate{} = thing),
+    do: NovelReader.Retriever.get_from_update(thing)
+  def get(url),
+  do: NovelReader.Retriever.get_from_url(url)
 end
+
