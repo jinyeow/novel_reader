@@ -1,9 +1,4 @@
 defmodule NovelReader.NovelUpdates do
-  use GenServer
-  require Logger
-
-  alias NovelReader.NovelUpdates.ChapterUpdate
-
   @moduledoc """
   Handles scraping the NovelUpdates feed to return a list of information about
   chapter updates.
@@ -13,7 +8,11 @@ defmodule NovelReader.NovelUpdates do
   Able to search chapter updates based on attribute.
   """
 
-  # TODO should I add a timer/{:error, :timeout} to get_updates?
+  use GenServer
+
+  alias NovelReader.Model.ChapterUpdate
+
+  require Logger
 
   @feed "http://www.novelupdates.com/rss.php?uid=12590&unq=571077742187a&type=read"
 

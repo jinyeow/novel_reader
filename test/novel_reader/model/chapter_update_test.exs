@@ -1,10 +1,9 @@
-defmodule NovelReader.NovelUpdates.ChapterUpdateTest do
+defmodule NovelReader.Model.ChapterUpdateTest do
   use ExUnit.Case, async: true
-  doctest NovelReader.NovelUpdates.ChapterUpdate
+  doctest NovelReader.Model.ChapterUpdate
 
-  alias NovelReader.NovelUpdates.ChapterUpdate
+  alias NovelReader.Model.ChapterUpdate
 
-  # TODO add more tests
   # TODO test parse_chapter_info parses correctly for:
   #   v8c9,10,11 <- comma separated,
   #   v8c9-11    <- hyphen,
@@ -13,11 +12,9 @@ defmodule NovelReader.NovelUpdates.ChapterUpdateTest do
   #   c9         <- simple 'chapter'
 
   test "is able to update ChapterUpdate attributes" do
-    updated_chapter = chapter
-    |> NovelReader.NovelUpdates.ChapterUpdate.update(
-      :tags,
-      chapter[:tags] ++ ["immortal"]
-    )
+    updated_chapter =
+      chapter
+      |> ChapterUpdate.update(:tags, chapter[:tags] ++ ["immortal"])
 
     assert updated_chapter[:tags] == ["immortal"]
   end

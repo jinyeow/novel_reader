@@ -3,6 +3,7 @@ defmodule NovelReader.NovelUpdatesTest do
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
 
   alias NovelReader.NovelUpdates
+  alias NovelReader.Model.ChapterUpdate
 
   setup_all do
     HTTPoison.start
@@ -26,7 +27,7 @@ defmodule NovelReader.NovelUpdatesTest do
     assert NovelUpdates.updates
             |> are_all?(fn update ->
               %{__struct__: struct} = update
-              struct == NovelReader.NovelUpdates.ChapterUpdate
+              struct == NovelReader.Model.ChapterUpdate
             end)
   end
 

@@ -17,7 +17,7 @@ defmodule NovelReader.Retriever do
   """
 
   alias NovelReader.Retriever
-  alias NovelReader.NovelUpdates.ChapterUpdate
+  alias NovelReader.Model.ChapterUpdate
   alias NovelReader.Model.Chapter
   alias NovelReader.Cache
 

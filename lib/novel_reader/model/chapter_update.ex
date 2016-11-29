@@ -1,7 +1,7 @@
-defmodule NovelReader.NovelUpdates.ChapterUpdate do
+defmodule NovelReader.Model.ChapterUpdate do
   @behaviour Access
 
-  alias NovelReader.NovelUpdates.ChapterUpdate
+  alias NovelReader.Model.ChapterUpdate
 
   defstruct [
     :chapters,

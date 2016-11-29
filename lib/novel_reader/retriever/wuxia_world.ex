@@ -1,6 +1,8 @@
 defmodule NovelReader.Retriever.WuxiaWorld do
   @behaviour NovelReader.Retriever
 
+  alias NovelReader.Model.ChapterUpdate
+
   @base_url "https://www.wuxiaworld.com"
 
   def get(url) do
@@ -33,7 +35,7 @@ defmodule NovelReader.Retriever.WuxiaWorld do
   end
 
   # TODO
-  defp build_url(%NovelReader.NovelUpdates.ChapterUpdate{} = update) do
+  defp build_url(%ChapterUpdate{} = update) do
     chapter = update[:chapter]
     @base_url <> case update[:title] do
       # "I Shall Seal the Heavens" -> "/issth-index/issth-book-#{book}-chapter-#{chapter}"
