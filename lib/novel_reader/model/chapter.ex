@@ -1,22 +1,29 @@
 defmodule NovelReader.Model.Chapter do
+  @moduledoc false
+
+
   @behaviour Access
 
   alias NovelReader.Model.Chapter
 
   defstruct [
-    :title,
+    :chapter,
     :content,
     :next,
-    :prev
+    :novel,
+    :prev,
+    :title
   ]
 
   # next/prev either a url/file path
   # content most likely will be in HTML and will be converted later?
   @type t :: %Chapter{
-    title:   String.t,
+    chapter: String.t | non_neg_integer,
     content: String.t,
     next:    String.t,
-    prev:    String.t
+    novel:   String.t,
+    prev:    String.t,
+    title:   String.t
   }
 
   def format(chapter, :html), do: chapter[:content]

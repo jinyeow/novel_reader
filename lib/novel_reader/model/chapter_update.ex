@@ -1,4 +1,7 @@
 defmodule NovelReader.Model.ChapterUpdate do
+  @moduledoc false
+
+
   @behaviour Access
 
   alias NovelReader.Model.ChapterUpdate
