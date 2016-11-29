@@ -11,19 +11,16 @@ defmodule NovelReader do
 
       # worker that handles socket requests to the API? or comms with RabbitMQ
       # Delegates to an ongoing socket connection handler; or a MQ conn ?
-      # worker(NovelReader.RequestHandler, [socket]) ?
+      worker(NovelReader.Controller, []),
 
       # worker that handles chapter processing operations: pull, process, return?
       # or should I send it to the TaskSupervisor?
       # worker(NovelReader.ReaderServer, []) ?
 
-      # worker to keep persistent state?
-      # e.g. user settings, cached "retrieved" chapters
-
-      # CacheServer
+      # Cache
       worker(NovelReader.CacheServer, []),
 
-      # NovelUpdates Feed
+      # Feed
       worker(NovelReader.NovelUpdates, [])
     ]
 
