@@ -32,6 +32,7 @@ use Mix.Config
 config :ex_doc, :markdown_processor, ExDoc.Markdown.Pandoc
 
 config :mix_test_watch,
+  clear: true,
   tasks: [
     "test",
     "credo",

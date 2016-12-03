@@ -36,10 +36,17 @@ defmodule NovelReader.Mixfile do
   defp deps do
     [
       {:scrape, "~> 1.2"},
-      {:exvcr, "~> 0.8", only: :test},
+
+      # Documentation
       {:ex_doc, "~> 0.14", only: [:dev, :test]},
+
+      # Mocks
+      {:exvcr, "~> 0.8", only: :test},
+
+      # test utilities
       {:mix_test_watch, "~> 0.2", only: [:dev, :test]},
-      {:credo, "~> 0.5", only: [:dev, :test]}
+      {:credo, "~> 0.5", only: [:dev, :test]},
+      {:ex_unit_notifier, "~> 0.1", only: :test}
     ]
   end
 
