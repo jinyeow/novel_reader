@@ -1,4 +1,6 @@
 defmodule NovelReader do
+  @moduledoc false
+
   use Application
 
   alias NovelReader.Model.ChapterUpdate

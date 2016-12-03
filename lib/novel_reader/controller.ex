@@ -30,8 +30,11 @@ defmodule NovelReader.Controller do
 
   def init(state) do
     opts = [:binary, active: false]
-    {:ok, socket} = :gen_tcp.listen(@port, opts)
-    {:ok, %{state | socket: socket}}
+
+    case :gen_tcp.listen(@port, opts) do
+      {:ok, socket} -> {:ok, %{state | socket: socket}}
+      {:error, :eaddrinuse} -> {:stop, "Port in use."}
+    end
   end
 
   # TODO

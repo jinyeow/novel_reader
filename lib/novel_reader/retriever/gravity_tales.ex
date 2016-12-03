@@ -1,4 +1,6 @@
 defmodule NovelReader.Retriever.GravityTales do
+  @moduledoc false
+
   @behaviour NovelReader.Retriever
 
   @base_url "https://www.gravitytales.com/"
@@ -13,21 +15,26 @@ defmodule NovelReader.Retriever.GravityTales do
   defp find_content(page) do
     %HTTPoison.Response{body: body} = page
 
-    link = Floki.find(body, ".entry-content a")
+    link = body
+           |> Floki.find(".entry-content a")
            |> Enum.filter(fn elem ->
-             Floki.attribute(elem, "href")
+             elem
+             |> Floki.attribute("href")
              |> hd =~ ~r/-chapter-[0-9]+/
            end)
            |> hd
 
-    url = Floki.attribute(link, "href")
+    url = link
+          |> Floki.attribute("href")
           |> hd
           |> String.replace("../../", @base_url)
 
     {:ok, page} = HTTPoison.get(url, [], [follow_redirect: true])
     %HTTPoison.Response{body: body} = page
 
-    {_div, _attr, content} = Floki.find(body, "div.innerContent") |> hd
+    {_div, _attr, content} = body
+                             |> Floki.find("div.innerContent")
+                             |> hd
 
     content
     |> Floki.DeepText.get("\n")

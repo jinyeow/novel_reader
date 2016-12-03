@@ -5,12 +5,12 @@ defmodule NovelReader.Retriever do
   retrievers.
 
   ## Example
-      iex> NovelReader.Retriever.retriever("WuxiaWorld")
-      {:ok, Retriever.WuxiaWorld}
+      iex> NovelReader.Retriever.retriever("Wuxiaworld")
+      {:ok, NovelReader.Retriever.WuxiaWorld}
       iex> NovelReader.Retriever.retriever("a0132")
-      {:ok, Retriever.WuxiaWorld}
+      {:ok, NovelReader.Retriever.WuxiaWorld}
       iex> NovelReader.Retriever.retriever("Gravity Tales")
-      {:ok, Retriever.GravityTales}
+      {:ok, NovelReader.Retriever.GravityTales}
       iex> NovelReader.Retriever.retriever("Some Fake Translations")
       {:error, :translator_unknown}
 
@@ -91,6 +91,7 @@ defmodule NovelReader.Retriever do
       "Dreams of Jianghu"        -> {:ok, Retriever.DreamsOfJianghu}
       "faktranslations"          -> {:ok, Retriever.FakTranslations}
       "Gravity Tales"            -> {:ok, Retriever.GravityTales}
+      "Lastvoice Translations"   -> {:ok, Retriever.LastvoiceTranslator}
       "KobatoChanDaiSuki"        -> {:ok, Retriever.KobatoChanDaiSuki}
       "Myoniyoni Translations"   -> {:ok, Retriever.MyoniyoniTranslations}
       "Novel Saga"               -> {:ok, Retriever.NovelSaga}
@@ -103,7 +104,7 @@ defmodule NovelReader.Retriever do
       "Thyaeria's Translation"   -> {:ok, Retriever.WuxiaWorld}
       "Translation Nations"      -> {:ok, Retriever.TranslationNations}
       "volaretranslations"       -> {:ok, Retriever.VolareTranslations}
-      "wleltranslations"         -> {:ok, Retriever.WeleTranslations}
+      "weleltranslations"        -> {:ok, Retriever.WeleTranslations}
       "Wuxiaworld"               -> {:ok, Retriever.WuxiaWorld}
       "XianXiaWorld"             -> {:ok, Retriever.XianXiaWorld}
       "Yoraikun Translation"     -> {:ok, Retriever.YoraikunTranslation}

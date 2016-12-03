@@ -1,4 +1,6 @@
 defmodule NovelReader.Retriever.TranslationNations do
+  @moduledoc false
+
   @behaviour NovelReader.Retriever
 
   def get(url) do
@@ -11,20 +13,24 @@ defmodule NovelReader.Retriever.TranslationNations do
   defp find_content(page) do
     %HTTPoison.Response{body: body} = page
 
-    link = Floki.find(body, ".entry-content a")
+    link = body
+           |> Floki.find(".entry-content a")
            |> Enum.filter(fn elem ->
-             Floki.attribute(elem, "href")
+             elem
+             |> Floki.attribute("href")
              |> hd =~ ~r/-chapter-[0-9]+/
            end)
            |> hd
 
-    url = Floki.attribute(link, "href")
+    url = link
+          |> Floki.attribute("href")
           |> hd
 
     {:ok, page} = HTTPoison.get(url, [], [follow_redirect: true])
     %HTTPoison.Response{body: body} = page
 
-    {_tag, _attr, content} = Floki.find(body, "div[class='entry-content clear']")
+    {_tag, _attr, content} = body
+                             |> Floki.find("div[class='entry-content clear']")
                              |> hd
 
     content |> Floki.DeepText.get("\n")

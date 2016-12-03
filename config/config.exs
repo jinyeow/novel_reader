@@ -30,3 +30,9 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :ex_doc, :markdown_processor, ExDoc.Markdown.Pandoc
+
+config :mix_test_watch,
+  tasks: [
+    "test",
+    "credo",
+  ]

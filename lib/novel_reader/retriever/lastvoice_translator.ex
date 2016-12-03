@@ -1,4 +1,6 @@
 defmodule NovelReader.Retriever.LastvoiceTranslator do
+  @moduledoc false
+
   @behaviour NovelReader.Retriever
 
   def get(url) do

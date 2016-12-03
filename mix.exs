@@ -19,8 +19,10 @@ defmodule NovelReader.Mixfile do
       package:         package,
 
       name:            "Novel Reader",
-      docs:            [ main: "NovelReader",
-                         extras: ["README.md"]]
+      docs:            [
+                         main: "NovelReader",
+                         extras: ["README.md"]
+                       ]
     ]
   end
 
@@ -35,7 +37,9 @@ defmodule NovelReader.Mixfile do
     [
       {:scrape, "~> 1.2"},
       {:exvcr, "~> 0.8", only: :test},
-      {:ex_doc, "~> 0.14", only: :dev}
+      {:ex_doc, "~> 0.14", only: [:dev, :test]},
+      {:mix_test_watch, "~> 0.2", only: [:dev, :test]},
+      {:credo, "~> 0.5", only: [:dev, :test]}
     ]
   end
 

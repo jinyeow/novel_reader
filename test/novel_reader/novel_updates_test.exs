@@ -5,13 +5,16 @@ defmodule NovelReader.NovelUpdatesTest do
   alias NovelReader.NovelUpdates
   alias NovelReader.Model.ChapterUpdate
 
-  setup_all do
-    HTTPoison.start
-  end
+  @feed "http://www.novelupdates.com/rss.php?uid=12590&unq=571077742187a&type=read"
+  @s_tier_feed \
+      "http://www.novelupdates.com/rss.php?uid=12590&unq=571077742187a&type=1&lid=local"
+
+  # setup_all do
+  #   HTTPoison.start
+  # end
 
   test "it is initialized with the default feed url" do
-    assert NovelUpdates.feed == \
-      "http://www.novelupdates.com/rss.php?uid=12590&unq=571077742187a&type=read"
+    assert NovelUpdates.feed == @feed
   end
 
   test "it is initialized with a list of updates" do
@@ -27,7 +30,7 @@ defmodule NovelReader.NovelUpdatesTest do
     assert NovelUpdates.updates
             |> are_all?(fn update ->
               %{__struct__: struct} = update
-              struct == NovelReader.Model.ChapterUpdate
+              struct == ChapterUpdate
             end)
   end
 
@@ -36,16 +39,23 @@ defmodule NovelReader.NovelUpdatesTest do
   end
 
   test "update feed changes the feed URL to another valid feed URL" do
-    s_tier_url = \
-      "http://www.novelupdates.com/rss.php?uid=12590&unq=571077742187a&type=1&lid=local"
-
-    NovelUpdates.update_feed(s_tier_url)
+    NovelUpdates.update_feed(@s_tier_feed)
 
     assert feed_url_valid?
-    assert NovelUpdates.feed == s_tier_url
+    assert NovelUpdates.feed == @s_tier_feed
+
+    NovelUpdates.update_feed(@feed)
   end
 
   # TODO add tests for NovelReader.NovelUpdates.filter
+
+  test "filter/1 searches ChapterUpdate titles successfully" do
+    search_terms = ["heaven", "god", "asura", "marti", "immort"]
+    for term <- search_terms do
+      first_result = NovelUpdates.filter(term) |> hd
+      assert Regex.match?(~r/#{term}/i, first_result[:title])
+    end
+  end
 
   ## Helpers
 

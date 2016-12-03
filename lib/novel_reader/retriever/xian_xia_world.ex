@@ -1,4 +1,6 @@
 defmodule NovelReader.Retriever.XianXiaWorld do
+  @moduledoc false
+
   @behaviour NovelReader.Retriever
 
   def get(url) do
@@ -10,7 +12,9 @@ defmodule NovelReader.Retriever.XianXiaWorld do
 
   defp find_content(page) do
     %HTTPoison.Response{body: body} = page
-    {_tag, _attr, child} = Floki.find(body, "#content") |> hd
+    {_tag, _attr, child} = body
+                           |> Floki.find("#content")
+                           |> hd
 
     child
     |> Enum.filter(&is_binary/1)

@@ -49,8 +49,8 @@ defmodule NovelReader.NovelUpdates do
   Asynchronously update the feed URL.
   Then pull the chapter updates for the new feed.
   """
-  def update_feed(feed) do
-    GenServer.cast(@name, {:update_feed, feed})
+  def update_feed(feed_url) do
+    GenServer.cast(@name, {:update_feed, feed_url})
     get_updates
   end
 
@@ -91,16 +91,16 @@ defmodule NovelReader.NovelUpdates do
   end
 
   def handle_call({:get_updates, :no_parse}, _from, {feed_url, _chapters}) do
-    updates = feed_url
+    chapter_updates = feed_url
     |> Scrape.feed
-    {:reply, updates, {feed_url, updates}}
+    {:reply, chapter_updates, {feed_url, chapter_updates}}
   end
 
   def handle_call({:get_updates, :parse}, _from, {feed_url, _chapters}) do
-    updates = feed_url
+    chapter_updates = feed_url
     |> Scrape.feed
     |> parse_feed([])
-    {:reply, updates, {feed_url, updates}}
+    {:reply, chapter_updates, {feed_url, chapter_updates}}
   end
 
   def handle_call({:filter, attr, term}, _from, {_feed, chapters} = state) do
@@ -120,16 +120,16 @@ defmodule NovelReader.NovelUpdates do
     {:reply, chapters, state}
   end
 
-  def handle_cast({:update_feed, feed}, {_feed_url, chapters}) do
-    {:noreply, {feed, chapters}}
+  def handle_cast({:update_feed, feed_url}, {_feed_url, chapters}) do
+    {:noreply, {feed_url, chapters}}
   end
 
   ## Private
 
   @spec parse_feed([%{}], [%{}]) :: [%ChapterUpdate{}]
-  defp parse_feed([], feed), do: feed
-  defp parse_feed([head|tail], feed) do
-    parse_feed(tail, feed ++ [ChapterUpdate.parse_chapter(head)])
+  defp parse_feed([], chapter_updates), do: chapter_updates
+  defp parse_feed([head|tail], chapter_updates) do
+    parse_feed(tail, chapter_updates ++ [ChapterUpdate.parse_chapter(head)])
   end
 end
 
