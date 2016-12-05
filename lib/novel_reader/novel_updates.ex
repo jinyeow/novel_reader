@@ -6,6 +6,7 @@ defmodule NovelReader.NovelUpdates do
   Stores the feed URL and a list of chapter updates as state.
 
   Able to search chapter updates based on attribute.
+
   """
 
   use GenServer
@@ -32,9 +33,15 @@ defmodule NovelReader.NovelUpdates do
   @doc """
   Filter chapters by attribute; defaults to :title.
   """
-  @spec filter(atom, String.t) :: [%ChapterUpdate{}]
+  @spec filter(atom, String.t) :: {:ok, [%ChapterUpdate{}]}
+                                | {:ok, []}
+                                | {:error, :attr_cannot_be_searched}
   def filter(attr \\ :title, term) do
-    GenServer.call(@name, {:filter, attr, term})
+    valid = [:title, :translator, :tags]
+    case valid |> Enum.member?(attr) do
+      true -> {:ok, GenServer.call(@name, {:filter, attr, term})}
+      false -> {:error, :attr_cannot_be_searched}
+    end
   end
 
   @doc """
@@ -107,7 +114,17 @@ defmodule NovelReader.NovelUpdates do
     {:ok, pattern} = Regex.compile(term, "i")
     results = chapters
               |> Enum.filter(fn chapter ->
-                Regex.match?(pattern, chapter[attr])
+                  cond do
+                    chapter[attr] |> is_list ->
+                      case list = chapter[attr] do
+                        [] -> false
+                        _ ->
+                          for thing <- list do
+                            Regex.match?(pattern, thing)
+                          end
+                      end
+                    chapter[attr] |> is_binary -> Regex.match?(pattern, chapter[attr])
+                  end
               end)
     {:reply, results, state}
   end

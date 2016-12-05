@@ -1,4 +1,10 @@
 defmodule NovelReader.NovelUpdatesTest do
+  @moduledoc """
+  Tests NovelUpdates API.
+  Except for get_updates/0, get_updates/1, and parse_feed/1
+
+  """
+
   use ExUnit.Case, async: false
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
 
@@ -26,10 +32,9 @@ defmodule NovelReader.NovelUpdatesTest do
     assert NovelUpdates.updates |> is_list
   end
 
-  test "each item in the updates is a ChapterUpdate" do
+  test "each item in updates/0 is a ChapterUpdate" do
     assert NovelUpdates.updates
-            |> are_all?(fn update ->
-              %{__struct__: struct} = update
+            |> are_all?(fn %{__struct__: struct} = _update ->
               struct == ChapterUpdate
             end)
   end
@@ -45,16 +50,64 @@ defmodule NovelReader.NovelUpdatesTest do
     assert NovelUpdates.feed == @s_tier_feed
 
     NovelUpdates.update_feed(@feed)
+    assert feed_url_valid?
+    assert NovelUpdates.feed == @feed
   end
 
-  # TODO add tests for NovelReader.NovelUpdates.filter
-
-  test "filter/1 searches ChapterUpdate titles successfully" do
+  test "filter/1 searches ChapterUpdate titles successfully and returns a list" do
     search_terms = ["heaven", "god", "asura", "marti", "immort"]
     for term <- search_terms do
-      first_result = NovelUpdates.filter(term) |> hd
-      assert Regex.match?(~r/#{term}/i, first_result[:title])
+      {:ok, results} = NovelUpdates.filter(term)
+      case results  do
+        [] -> assert results == []
+        _list ->
+          are_all?(results, fn result ->
+            assert Regex.match?(~r/#{term}/i, result[:title])
+          end)
+      end
     end
+  end
+
+  test "filter/1 searches ChapterUpdate titles unsuccessfully and returns an empty list" do
+    assert NovelUpdates.filter("term that will never match") == {:ok, []}
+  end
+
+  test "filter/2 searches translators successfully and returns a list of ChapterUpdates" do
+    translators = ["wuxiaworld", "gravity tales", "xianxiaworld", "volare", "subudai11"]
+    for translator <- translators do
+      {:ok, results} = NovelUpdates.filter(:translator, translator)
+      case results  do
+        [] -> assert results == []
+        _list ->
+          are_all?(results, fn result ->
+            assert Regex.match?(~r/#{translator}/i, result[:translator])
+          end)
+      end
+    end
+  end
+
+  test "filter/2 returns an empty list on unsuccessful searches" do
+    invalid_term = "some term that will never match"
+
+    assert NovelUpdates.filter(:translator, invalid_term) == {:ok, []}
+    assert NovelUpdates.filter(:tags, invalid_term) == {:ok, []}
+  end
+
+  test "filter/2 can only search on tags and translator" do
+    some_search_term = "some search term"
+
+    assert NovelUpdates.filter(:chapters, some_search_term) ==
+      {:error, :attr_cannot_be_searched}
+    assert NovelUpdates.filter(:chapter_url, some_search_term) ==
+      {:error, :attr_cannot_be_searched}
+    assert NovelUpdates.filter(:part, some_search_term) ==
+      {:error, :attr_cannot_be_searched}
+    assert NovelUpdates.filter(:volume, some_search_term) ==
+      {:error, :attr_cannot_be_searched}
+    assert NovelUpdates.filter(:pubdate, some_search_term) ==
+      {:error, :attr_cannot_be_searched}
+    assert NovelUpdates.filter(:series_url, some_search_term) ==
+      {:error, :attr_cannot_be_searched}
   end
 
   ## Helpers

@@ -47,6 +47,13 @@ defmodule NovelReader.Retriever do
   Saves newly downloaded chapters to the Cache
 
   Returns the chapter text.
+
+  TODO use HTTPoison.head(redirect_url) to get the HEAD
+  Get the redirect url from the "Location" header.
+  Use that to determine if an Announcement Post or the actual Chapter.
+
+  {ok, head} = HTTPoison.head(url)
+  %{"Location" => url} = head.headers |> Map.new
   """
   @spec get_from_update(ChapterUpdate.t) :: {:ok, String.t} | {:error, any}
   def get_from_update(chapter) do
