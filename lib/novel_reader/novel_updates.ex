@@ -35,12 +35,12 @@ defmodule NovelReader.NovelUpdates do
   """
   @spec filter(atom, String.t) :: {:ok, [%ChapterUpdate{}]}
                                 | {:ok, []}
-                                | {:error, :attr_cannot_be_searched}
+                                | {:error, String.t}
   def filter(attr \\ :title, term) do
     valid = [:title, :translator, :tags]
     case valid |> Enum.member?(attr) do
       true -> {:ok, GenServer.call(@name, {:filter, attr, term})}
-      false -> {:error, :attr_cannot_be_searched}
+      false -> {:error, "Attribute unsearchable."}
     end
   end
 

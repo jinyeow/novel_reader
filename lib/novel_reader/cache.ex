@@ -137,7 +137,7 @@ defmodule NovelReader.Cache do
   defp chapter_saved?(title, chapter) do
     file = @novel_dir <> title <> ".novel/" <> (chapter |> to_string) <> ".html"
     case File.exists?(file) do
-      false -> {:error, :not_cached_or_saved}
+      false -> {:error, "Not in cache or on file."}
       true ->
         {:ok, content} = File.read(file)
         {:ok, :file, content}

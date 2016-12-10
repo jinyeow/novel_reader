@@ -97,17 +97,17 @@ defmodule NovelReader.NovelUpdatesTest do
     some_search_term = "some search term"
 
     assert NovelUpdates.filter(:chapters, some_search_term) ==
-      {:error, :attr_cannot_be_searched}
+      {:error, "Attribute unsearchable."}
     assert NovelUpdates.filter(:chapter_url, some_search_term) ==
-      {:error, :attr_cannot_be_searched}
+      {:error, "Attribute unsearchable."}
     assert NovelUpdates.filter(:part, some_search_term) ==
-      {:error, :attr_cannot_be_searched}
+      {:error, "Attribute unsearchable."}
     assert NovelUpdates.filter(:volume, some_search_term) ==
-      {:error, :attr_cannot_be_searched}
+      {:error, "Attribute unsearchable."}
     assert NovelUpdates.filter(:pubdate, some_search_term) ==
-      {:error, :attr_cannot_be_searched}
+      {:error, "Attribute unsearchable."}
     assert NovelUpdates.filter(:series_url, some_search_term) ==
-      {:error, :attr_cannot_be_searched}
+      {:error, "Attribute unsearchable."}
   end
 
   ## Helpers

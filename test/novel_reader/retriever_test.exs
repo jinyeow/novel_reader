@@ -8,14 +8,14 @@ defmodule NovelReader.RetrieverTest do
     invalid_url = "not.a.valid.url"
     ret         = Retriever.get_from_url(invalid_url)
 
-    assert ret == {:error, :invalid_url}
+    assert ret == {:error, "Invalid URL."}
   end
 
   test "retriever/1 returns an error if given an unknown or invalid translator string" do
     translator = "Some Unknown Tranlsator"
     ret        = Retriever.retriever(translator)
 
-    assert ret == {:error, :translator_unknown}
+    assert ret == {:error, "Translator unknown."}
   end
 
   @tag :pending

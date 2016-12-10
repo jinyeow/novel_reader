@@ -12,7 +12,7 @@ defmodule NovelReader.Retriever do
       iex> NovelReader.Retriever.retriever("Gravity Tales")
       {:ok, NovelReader.Retriever.GravityTales}
       iex> NovelReader.Retriever.retriever("Some Fake Translations")
-      {:error, :translator_unknown}
+      {:error, "Translator unknown."}
 
   """
 
@@ -73,9 +73,9 @@ defmodule NovelReader.Retriever do
   """
   @spec get_from_url(url) :: {:ok, [%Chapter{}]} |
                              {:ok, %Chapter{}} |
-                             {:error, :invalid_url}
+                             {:error, String.t}
   def get_from_url(url) do
-    if not valid_url?(url) do {:error, :invalid_url} end
+    if not valid_url?(url) do {:error, "Invalid URL."} end
     # TODO finish this.
   end
 
@@ -88,7 +88,7 @@ defmodule NovelReader.Retriever do
   Returns the correct module to use depending on the translator.
   If the translator is unknown, returns an :error.
   """
-  @spec retriever(Retriever.translator) :: {:ok, module} | {:error, :translator_unknown}
+  @spec retriever(Retriever.translator) :: {:ok, module} | {:error, String.t}
   def retriever(translator) do
     case translator do
       "a0132"                    -> {:ok, Retriever.WuxiaWorld}
@@ -115,7 +115,7 @@ defmodule NovelReader.Retriever do
       "Wuxiaworld"               -> {:ok, Retriever.WuxiaWorld}
       "XianXiaWorld"             -> {:ok, Retriever.XianXiaWorld}
       "Yoraikun Translation"     -> {:ok, Retriever.YoraikunTranslation}
-      _                          -> {:error, :translator_unknown}
+      _                          -> {:error, "Translator unknown."}
     end
   end
 
@@ -127,7 +127,7 @@ defmodule NovelReader.Retriever do
     # Check the cache first (let the CacheServer check if the chapter is on file)
     case Cache.get(title, chap) do
       {:ok, content} -> content
-      {:error, :not_cached_or_saved} ->
+      {:error, "Not in cache or on file."} ->
         {:ok, retriever} = chapter[:translator] |> retriever
         retriever.get(url)
     end
