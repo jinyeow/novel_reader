@@ -57,7 +57,7 @@ defmodule NovelReader.NovelUpdatesTest do
   test "filter/1 searches ChapterUpdate titles successfully and returns a list" do
     search_terms = ["heaven", "god", "asura", "marti", "immort"]
     for term <- search_terms do
-      {:ok, results} = NovelUpdates.filter(term)
+      results = NovelUpdates.filter(term)
       case results  do
         [] -> assert results == []
         _list ->
@@ -69,13 +69,13 @@ defmodule NovelReader.NovelUpdatesTest do
   end
 
   test "filter/1 searches ChapterUpdate titles unsuccessfully and returns an empty list" do
-    assert NovelUpdates.filter("term that will never match") == {:ok, []}
+    assert NovelUpdates.filter("term that will never match") == []
   end
 
   test "filter/2 searches translators successfully and returns a list of ChapterUpdates" do
     translators = ["wuxiaworld", "gravity tales", "xianxiaworld", "volare", "subudai11"]
     for translator <- translators do
-      {:ok, results} = NovelUpdates.filter(:translator, translator)
+      results = NovelUpdates.filter(:translator, translator)
       case results  do
         [] -> assert results == []
         _list ->
@@ -89,8 +89,8 @@ defmodule NovelReader.NovelUpdatesTest do
   test "filter/2 returns an empty list on unsuccessful searches" do
     invalid_term = "some term that will never match"
 
-    assert NovelUpdates.filter(:translator, invalid_term) == {:ok, []}
-    assert NovelUpdates.filter(:tags, invalid_term) == {:ok, []}
+    assert NovelUpdates.filter(:translator, invalid_term) == []
+    assert NovelUpdates.filter(:tags, invalid_term) == []
   end
 
   test "filter/2 can only search on tags and translator" do

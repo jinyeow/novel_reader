@@ -39,7 +39,7 @@ defmodule NovelReader.NovelUpdates do
   def filter(attr \\ :title, term) do
     valid = [:title, :translator, :tags]
     case valid |> Enum.member?(attr) do
-      true -> {:ok, GenServer.call(@name, {:filter, attr, term})}
+      true -> GenServer.call(@name, {:filter, attr, term})
       false -> {:error, "Attribute unsearchable."}
     end
   end

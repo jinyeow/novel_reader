@@ -6,7 +6,7 @@ defmodule NovelReader.RetrieverTest do
 
   test "get_from_url/1 returns an error if url is invalid." do
     invalid_url = "not.a.valid.url"
-    ret         = Retriever.get_from_url(invalid_url)
+    ret         = Retriever.get(invalid_url)
 
     assert ret == {:error, "Invalid URL."}
   end

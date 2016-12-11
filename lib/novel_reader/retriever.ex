@@ -16,6 +16,8 @@ defmodule NovelReader.Retriever do
 
   """
 
+  import NovelReader.Util.Helpers
+
   alias NovelReader.Retriever
   alias NovelReader.Model.ChapterUpdate
   alias NovelReader.Model.Chapter
@@ -23,20 +25,9 @@ defmodule NovelReader.Retriever do
 
   @type url :: String.t
   @type translator :: String.t
-  @type reason :: atom
+  @type reason :: String.t
 
   @callback get(any) :: String.t
-  # TODO do we need another callback for get_from_url/2 ??
-
-  # TODO implement get_from_url/2
-  # @spec get_from_url(url, list) :: {:ok, String.t} | {:error, reason}
-  # def get_from_url(url, opts \\ [force: false]) do
-    # if opts[:force] is true then directly retrieve from web using URL
-    # else:
-    #   check cache
-    #   check files
-    #   then pull from web using URL if :not_in_cache_or_file
-  # end
 
   @doc """
   Pass in a %ChapterUpdate{} struct.
@@ -47,16 +38,9 @@ defmodule NovelReader.Retriever do
   Saves newly downloaded chapters to the Cache
 
   Returns the chapter text.
-
-  TODO use HTTPoison.head(redirect_url) to get the HEAD
-  Get the redirect url from the "Location" header.
-  Use that to determine if an Announcement Post or the actual Chapter.
-
-  {ok, head} = HTTPoison.head(url)
-  %{"Location" => url} = head.headers |> Map.new
   """
-  @spec get_from_update(ChapterUpdate.t) :: {:ok, String.t} | {:error, any}
-  def get_from_update(chapter) do
+  @spec get(ChapterUpdate.t) :: {:ok, String.t} | {:error, reason}
+  def get(%ChapterUpdate{} = chapter) do
     case retrieve(chapter) do
       {:error, reason} -> {:error, reason}
       content ->
@@ -71,66 +55,74 @@ defmodule NovelReader.Retriever do
   If URL points to the novel index, return a List of %Chapter{}.
   If URL points to one chapter return a %Chapter{}.
   """
-  @spec get_from_url(url) :: {:ok, [%Chapter{}]} |
-                             {:ok, %Chapter{}} |
-                             {:error, String.t}
-  def get_from_url(url) do
+  @spec get(String.t) :: {:ok, [%Chapter{}]} | {:ok, %Chapter{}} | {:error, reason}
+  def get(url) when is_binary(url) do
     if not valid_url?(url) do {:error, "Invalid URL."} end
     # TODO finish this.
   end
 
-  defp valid_url?(url) do
-    uri = URI.parse(url)
-    uri.scheme != nil && uri.host =~ "."
-  end
-
   @doc """
   Returns the correct module to use depending on the translator.
-  If the translator is unknown, returns an :error.
+  If the translator is unknown, returns an :error tuple.
   """
   @spec retriever(Retriever.translator) :: {:ok, module} | {:error, String.t}
   def retriever(translator) do
     case translator do
-      "a0132"                    -> {:ok, Retriever.WuxiaWorld}
-      "Alyschu"                  -> {:ok, Retriever.WuxiaWorld}
-      "Aran Translations"        -> {:ok, Retriever.AranTranslations}
-      "ChongMeiTranslations"     -> {:ok, Retriever.ChongMeiTranslations}
-      "Dreams of Jianghu"        -> {:ok, Retriever.DreamsOfJianghu}
-      "faktranslations"          -> {:ok, Retriever.FakTranslations}
-      "Gravity Tales"            -> {:ok, Retriever.GravityTales}
-      "Lastvoice Translations"   -> {:ok, Retriever.LastvoiceTranslator}
-      "KobatoChanDaiSuki"        -> {:ok, Retriever.KobatoChanDaiSuki}
-      "Myoniyoni Translations"   -> {:ok, Retriever.MyoniyoniTranslations}
-      "Novel Saga"               -> {:ok, Retriever.NovelSaga}
-      "otterspacetranslation"    -> {:ok, Retriever.OtterspaceTranslation}
-      "PiggyBottle Translations" -> {:ok, Retriever.PiggyBottleTranslations}
-      "putttytranslations"       -> {:ok, Retriever.PutttyTranslations}
-      "Radiant Translations"     -> {:ok, Retriever.RadiantTranslations}
-      "subudai11"                -> {:ok, Retriever.Subudai11}
-      "Thyaeria"                 -> {:ok, Retriever.WuxiaWorld}
-      "Thyaeria's Translation"   -> {:ok, Retriever.WuxiaWorld}
-      "Translation Nations"      -> {:ok, Retriever.TranslationNations}
-      "volaretranslations"       -> {:ok, Retriever.VolareTranslations}
-      "weleltranslations"        -> {:ok, Retriever.WeleTranslations}
-      "Wuxiaworld"               -> {:ok, Retriever.WuxiaWorld}
-      "XianXiaWorld"             -> {:ok, Retriever.XianXiaWorld}
-      "Yoraikun Translation"     -> {:ok, Retriever.YoraikunTranslation}
-      _                          -> {:error, "Translator unknown."}
+      "a0132"                      -> {:ok, Retriever.WuxiaWorld}
+      "Alyschu"                    -> {:ok, Retriever.WuxiaWorld}
+      "Aran Translations"          -> {:ok, Retriever.AranTranslations}
+      "ChongMeiTranslations"       -> {:ok, Retriever.ChongMeiTranslations}
+      "Dreams of Jianghu"          -> {:ok, Retriever.DreamsOfJianghu}
+      "faktranslations"            -> {:ok, Retriever.FakTranslations}
+      "Gravity Tales"              -> {:ok, Retriever.GravityTales}
+      "Lastvoice Translations"     -> {:ok, Retriever.LastvoiceTranslator}
+      "Lesyt"                      -> {:ok, Retriever.Lesyt}
+      "KobatoChanDaiSuki"          -> {:ok, Retriever.KobatoChanDaiSuki}
+      "Myoniyoni Translations"     -> {:ok, Retriever.MyoniyoniTranslations}
+      "novelsreborn"               -> {:ok, Retriever.NovelsReborn}
+      "Novel Saga"                 -> {:ok, Retriever.NovelSaga}
+      "otterspacetranslation"      -> {:ok, Retriever.OtterspaceTranslation}
+      "PiggyBottle Translations"   -> {:ok, Retriever.PiggyBottleTranslations}
+      "putttytranslations"         -> {:ok, Retriever.PutttyTranslations}
+      "Radiant Translations"       -> {:ok, Retriever.RadiantTranslations}
+      "subudai11"                  -> {:ok, Retriever.Subudai11}
+      "Shiroyukineko Translations" -> {:ok, Retriever.ShiroyukinekoTranslations}
+      "Thyaeria"                   -> {:ok, Retriever.WuxiaWorld}
+      "Thyaeria's Translation"     -> {:ok, Retriever.WuxiaWorld}
+      "Translation Nations"        -> {:ok, Retriever.TranslationNations}
+      "volaretranslations"         -> {:ok, Retriever.VolareTranslations}
+      "weleltranslations"          -> {:ok, Retriever.WeleTranslations}
+      "Wuxiaworld"                 -> {:ok, Retriever.WuxiaWorld}
+      "XianXiaWorld"               -> {:ok, Retriever.XianXiaWorld}
+      "Yoraikun Translation"       -> {:ok, Retriever.YoraikunTranslation}
+      _                            -> {:error, "Translator unknown."}
     end
   end
 
+
+  # TODO use HTTPoison.head(redirect_url) to get the HEAD
+  # Get the redirect url from the "Location" header.
+  # Use that to determine if an Announcement Post or the actual Chapter.
+
+  # {ok, head} = HTTPoison.head(url)
+  # %{"Location" => url} = head.headers |> Map.new
   defp retrieve(chapter) do
+    chap  =
+      chapter[:chapters]
+      |> hd
     title = chapter[:title]
-    chap  = chapter[:chapters] |> hd
-    url   = chapter[:chapter_url]
 
     # Check the cache first (let the CacheServer check if the chapter is on file)
+    # If not in cache retrieve from web
     case Cache.get(title, chap) do
       {:ok, content} -> content
-      {:error, "Not in cache or on file."} ->
-        {:ok, retriever} = chapter[:translator] |> retriever
-        retriever.get(url)
+      {:error, cache_error} ->
+        case chapter[:translator] |> retriever do
+          {:ok, retriever} ->
+            chapter[:chapter_url]
+            |> retriever.get()
+          error -> error
+        end
     end
   end
-
 end

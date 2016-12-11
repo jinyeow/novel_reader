@@ -1,7 +1,6 @@
 defmodule NovelReader.Model.Chapter do
   @moduledoc false
 
-
   @behaviour Access
 
   alias NovelReader.Model.Chapter

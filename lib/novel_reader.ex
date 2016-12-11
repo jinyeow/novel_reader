@@ -60,10 +60,6 @@ defmodule NovelReader do
   Gets the chapter content.
   We are expecting input to either be a URL or a %ChapterUpdate{}
   """
-  @spec get(String.t|ChapterUpdate.t) :: {:ok, String.t} | {:error, atom}
-  def get(%ChapterUpdate{} = thing),
-    do: NovelReader.Retriever.get_from_update(thing)
-  def get(url),
-  do: NovelReader.Retriever.get_from_url(url)
+  defdelegate get(arg), to: NovelReader.Retriever, as: :get
 end
 

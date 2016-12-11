@@ -3,40 +3,91 @@ defmodule NovelReader.Retriever.GravityTales do
 
   @behaviour NovelReader.Retriever
 
+  alias NovelReader.Model.Chapter
+
   @base_url "https://www.gravitytales.com/"
 
   def get(url) do
-    case url |> HTTPoison.get([], [follow_redirect: true]) do
-      {:ok, page} -> find_content(page)
+    case page_type(url) do
+      :post ->
+        with {:ok, page} <- get_page(url),
+             url <- parse_post_page(page),
+             {:ok, page} <- get_page(url) do
+          parse_chapter_page(page)
+        else
+          {:error, reason} -> {:error, reason}
+        end
+      :chapter ->
+        with {:ok, page} <- get_page(url) do
+          parse_chapter_page(page)
+        else
+          {:error, reason} -> {:error, reason}
+        end
       {:error, reason} -> {:error, reason}
     end
   end
 
-  defp find_content(page) do
+  def page_type(url) do
+    {:ok, head} = HTTPoison.head(url)
+
+    url =
+      case head.headers |> Map.new do
+        %{"Location" => url} -> url
+        _ -> url
+      end
+
+    cond do
+      url =~ ~r/\/post\// -> :post
+      url =~ ~r/\/novel\/.+-chapter-/ -> :chapter
+      ! (url =~ ~r/chapter/) -> :novel
+      :else -> {:error, "Unidentified page type."}
+    end
+  end
+
+  def get_page(url) do
+    case url |> HTTPoison.get([], [follow_redirect: true]) do
+      {:ok, page} ->
+        case page.status_code do
+          200 -> {:ok, page}
+          code -> NovelReader.Util.Helpers.status_code_error(code)
+        end
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def parse_post_page(page) do
     %HTTPoison.Response{body: body} = page
 
-    link = body
-           |> Floki.find(".entry-content a")
-           |> Enum.filter(fn elem ->
-             elem
-             |> Floki.attribute("href")
-             |> hd =~ ~r/-chapter-[0-9]+/
-           end)
-           |> hd
+    link =
+      body
+      |> Floki.find(".entry-content a")
+      |> Enum.filter(fn elem ->
+        elem
+        |> Floki.attribute("href")
+        |> hd =~ ~r/-chapter-[0-9]+/
+      end)
+      |> hd
 
-    url = link
-          |> Floki.attribute("href")
-          |> hd
-          |> String.replace("../../", @base_url)
+    link
+    |> Floki.attribute("href")
+    |> hd
+    |> String.replace("../../", @base_url)
+  end
 
-    {:ok, page} = HTTPoison.get(url, [], [follow_redirect: true])
+  def parse_chapter_page(page) do
     %HTTPoison.Response{body: body} = page
+    %Chapter{
+      content: get_content(body)
+      # TODO get_{next,prev,novel,title,chapter}
+    }
+  end
 
-    {_div, _attr, content} = body
-                             |> Floki.find("div.innerContent")
-                             |> hd
+  def get_content(body) do
+    {_div, _attr, content} =
+      body
+      |> Floki.find("div.innerContent")
+      |> hd
 
-    content
-    |> Floki.DeepText.get("\n")
+    Floki.DeepText.get(content, "\n")
   end
 end
