@@ -16,11 +16,11 @@ defmodule NovelReader.Retriever do
 
   """
 
-  import NovelReader.Util.Helpers
+  import NovelReader.Helper
 
   alias NovelReader.Retriever
-  alias NovelReader.Model.ChapterUpdate
-  alias NovelReader.Model.Chapter
+  alias NovelReader.ChapterUpdate
+  alias NovelReader.Chapter
   alias NovelReader.Cache
 
   @type url :: String.t
@@ -99,13 +99,6 @@ defmodule NovelReader.Retriever do
     end
   end
 
-
-  # TODO use HTTPoison.head(redirect_url) to get the HEAD
-  # Get the redirect url from the "Location" header.
-  # Use that to determine if an Announcement Post or the actual Chapter.
-
-  # {ok, head} = HTTPoison.head(url)
-  # %{"Location" => url} = head.headers |> Map.new
   defp retrieve(chapter) do
     chap  =
       chapter[:chapters]
@@ -117,10 +110,8 @@ defmodule NovelReader.Retriever do
     case Cache.get(title, chap) do
       {:ok, content} -> content
       {:error, cache_error} ->
-        case chapter[:translator] |> retriever do
-          {:ok, retriever} ->
-            chapter[:chapter_url]
-            |> retriever.get()
+        case retriever(chapter[:translator]) do
+          {:ok, retriever} -> retriever.get(chapter[:chapter_url])
           error -> error
         end
     end

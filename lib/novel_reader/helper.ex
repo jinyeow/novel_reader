@@ -1,4 +1,4 @@
-defmodule NovelReader.Util.Helpers do
+defmodule NovelReader.Helper do
   @moduledoc """
   Helper functions used by any module.
   """
@@ -6,6 +6,17 @@ defmodule NovelReader.Util.Helpers do
   def valid_url?(url) do
     uri = URI.parse(url)
     uri.scheme != nil && uri.host =~ "."
+  end
+
+  def get_page(url) do
+    case url |> HTTPoison.get([], [follow_redirect: true]) do
+      {:ok, page} ->
+        case page.status_code do
+          200 -> {:ok, page}
+          code -> status_code_error(code)
+        end
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   def status_code_error(code) do

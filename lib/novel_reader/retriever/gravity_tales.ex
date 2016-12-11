@@ -3,7 +3,9 @@ defmodule NovelReader.Retriever.GravityTales do
 
   @behaviour NovelReader.Retriever
 
-  alias NovelReader.Model.Chapter
+  import NovelReader.Helper
+
+  alias NovelReader.Chapter
 
   @base_url "https://www.gravitytales.com/"
 
@@ -23,6 +25,7 @@ defmodule NovelReader.Retriever.GravityTales do
         else
           {:error, reason} -> {:error, reason}
         end
+      :novel -> {:error, "To be implemented."}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -41,17 +44,6 @@ defmodule NovelReader.Retriever.GravityTales do
       url =~ ~r/\/novel\/.+-chapter-/ -> :chapter
       ! (url =~ ~r/chapter/) -> :novel
       :else -> {:error, "Unidentified page type."}
-    end
-  end
-
-  def get_page(url) do
-    case url |> HTTPoison.get([], [follow_redirect: true]) do
-      {:ok, page} ->
-        case page.status_code do
-          200 -> {:ok, page}
-          code -> NovelReader.Util.Helpers.status_code_error(code)
-        end
-      {:error, reason} -> {:error, reason}
     end
   end
 

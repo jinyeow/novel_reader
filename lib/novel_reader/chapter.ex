@@ -1,9 +1,9 @@
-defmodule NovelReader.Model.Chapter do
+defmodule NovelReader.Chapter do
   @moduledoc false
 
   @behaviour Access
 
-  alias NovelReader.Model.Chapter
+  alias __MODULE__
 
   defstruct [
     :chapter,

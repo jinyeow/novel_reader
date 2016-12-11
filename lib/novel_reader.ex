@@ -3,8 +3,6 @@ defmodule NovelReader do
 
   use Application
 
-  alias NovelReader.Model.ChapterUpdate
-
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
@@ -15,7 +13,7 @@ defmodule NovelReader do
       worker(NovelReader.Cache, []),
 
       # Controls communication between Elixir application and Electron GUI
-      worker(NovelReader.Controller, []),
+      # worker(NovelReader.Controller, []),
 
       # Feed
       worker(NovelReader.NovelUpdates, [])

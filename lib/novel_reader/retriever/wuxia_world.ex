@@ -3,10 +3,13 @@ defmodule NovelReader.Retriever.WuxiaWorld do
 
   @behaviour NovelReader.Retriever
 
-  alias NovelReader.Model.ChapterUpdate
+  import NovelReader.Helper
+
+  alias NovelReader.ChapterUpdate
 
   @base_url "https://www.wuxiaworld.com"
 
+  # TODO Update this module similarly to GravityTales
   def get(url) do
     case url |> HTTPoison.get([], [follow_redirect: true]) do
       {:ok, page} -> find_content(page)
@@ -38,16 +41,5 @@ defmodule NovelReader.Retriever.WuxiaWorld do
                              |> hd
 
     content |> Floki.DeepText.get("\n")
-  end
-
-  # TODO
-  defp build_url(%ChapterUpdate{} = update) do
-    chapter = update[:chapter]
-    @base_url <> case update[:title] do
-      # "I Shall Seal the Heavens" -> "/issth-index/issth-book-#{book}-chapter-#{chapter}"
-      "Spirit Realm"     -> "/sr-index/sr-chapter-#{chapter}"
-      "Against the Gods" -> "/atg-index/atg-chapter-#{chapter}"
-      "Coiling Dragon"   -> "/cd-index/cd-chapter-#{chapter}"
-    end
   end
 end

@@ -1,8 +1,8 @@
-defmodule NovelReader.Model.ChapterUpdateTest do
+defmodule NovelReader.ChapterUpdateTest do
   use ExUnit.Case, async: true
-  doctest NovelReader.Model.ChapterUpdate
+  doctest NovelReader.ChapterUpdate
 
-  alias NovelReader.Model.ChapterUpdate
+  alias NovelReader.ChapterUpdate
 
   # TODO test parse_chapter_info parses correctly for:
   #   v8c9,10,11 <- comma separated,

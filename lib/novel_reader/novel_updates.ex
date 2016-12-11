@@ -11,7 +11,7 @@ defmodule NovelReader.NovelUpdates do
 
   use GenServer
 
-  alias NovelReader.Model.ChapterUpdate
+  alias NovelReader.ChapterUpdate
 
   require Logger
 

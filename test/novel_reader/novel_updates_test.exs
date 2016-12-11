@@ -9,7 +9,7 @@ defmodule NovelReader.NovelUpdatesTest do
   use ExVCR.Mock, adapter: ExVCR.Adapter.Hackney
 
   alias NovelReader.NovelUpdates
-  alias NovelReader.Model.ChapterUpdate
+  alias NovelReader.ChapterUpdate
 
   @feed "http://www.novelupdates.com/rss.php?uid=12590&unq=571077742187a&type=read"
   @s_tier_feed \
