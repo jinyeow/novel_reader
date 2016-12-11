@@ -7,7 +7,7 @@ defmodule NovelReader.Retriever.GravityTales do
 
   alias NovelReader.Chapter
 
-  @base_url "https://www.gravitytales.com/"
+  @base_url "http://gravitytales.com/"
 
   def get(url) do
     case page_type(url) do

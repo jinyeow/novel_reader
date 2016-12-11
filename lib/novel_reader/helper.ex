@@ -9,7 +9,7 @@ defmodule NovelReader.Helper do
   end
 
   def get_page(url) do
-    case url |> HTTPoison.get([], [follow_redirect: true]) do
+    case HTTPoison.get(url, [], [follow_redirect: true]) do
       {:ok, page} ->
         case page.status_code do
           200 -> {:ok, page}

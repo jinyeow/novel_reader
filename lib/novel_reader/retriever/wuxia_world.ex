@@ -15,6 +15,23 @@ defmodule NovelReader.Retriever.WuxiaWorld do
     end
   end
 
+  def page_type(url) do
+    {:ok, head} = HTTPoison.head(url)
+
+    url =
+      case head.headers |> Map.new do
+        %{"Location" => url} -> url
+        _ -> url
+      end
+
+    cond do
+      url =~ ~r/\/post\// -> :post
+      url =~ ~r/\/novel\/.+-chapter-/ -> :chapter
+      ! (url =~ ~r/chapter/) -> :novel
+      :else -> {:error, "Unidentified page type."}
+    end
+  end
+
   defp find_content(page) do
     %HTTPoison.Response{body: body} = page
 
