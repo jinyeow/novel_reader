@@ -39,7 +39,7 @@ defmodule NovelReader.Retriever do
 
   Returns the chapter text.
   """
-  @spec get(ChapterUpdate.t) :: {:ok, String.t} | {:error, reason}
+  @spec get(ChapterUpdate.t) :: {:ok, Chapter.t} | {:error, reason}
   def get(%ChapterUpdate{} = chapter) do
     case retrieve(chapter) do
       {:error, reason} -> {:error, reason}
@@ -57,8 +57,17 @@ defmodule NovelReader.Retriever do
   """
   @spec get(String.t) :: {:ok, [%Chapter{}]} | {:ok, %Chapter{}} | {:error, reason}
   def get(url) when is_binary(url) do
-    if not valid_url?(url) do {:error, "Invalid URL."} end
-    # TODO finish this.
+    if not valid_url?(url) do
+      {:error, "Invalid URL."}
+    else
+      case retriever(url) do
+        {:ok, translator} ->
+          chapter = translator.get(url)
+          Cache.add(chapter[:title], chapter[:content])
+          {:ok, chapter}
+        {:error, reason} -> {:error, reason}
+      end
+    end
   end
 
   @doc """
@@ -67,35 +76,35 @@ defmodule NovelReader.Retriever do
   """
   @spec retriever(Retriever.translator) :: {:ok, module} | {:error, String.t}
   def retriever(translator) do
-    case translator do
-      "a0132"                      -> {:ok, Retriever.WuxiaWorld}
-      "Alyschu"                    -> {:ok, Retriever.WuxiaWorld}
-      "Aran Translations"          -> {:ok, Retriever.AranTranslations}
-      "ChongMeiTranslations"       -> {:ok, Retriever.ChongMeiTranslations}
-      "Dreams of Jianghu"          -> {:ok, Retriever.DreamsOfJianghu}
-      "faktranslations"            -> {:ok, Retriever.FakTranslations}
-      "Gravity Tales"              -> {:ok, Retriever.GravityTales}
-      "Lastvoice Translations"     -> {:ok, Retriever.LastvoiceTranslator}
-      "Lesyt"                      -> {:ok, Retriever.Lesyt}
-      "KobatoChanDaiSuki"          -> {:ok, Retriever.KobatoChanDaiSuki}
-      "Myoniyoni Translations"     -> {:ok, Retriever.MyoniyoniTranslations}
-      "novelsreborn"               -> {:ok, Retriever.NovelsReborn}
-      "Novel Saga"                 -> {:ok, Retriever.NovelSaga}
-      "otterspacetranslation"      -> {:ok, Retriever.OtterspaceTranslation}
-      "PiggyBottle Translations"   -> {:ok, Retriever.PiggyBottleTranslations}
-      "putttytranslations"         -> {:ok, Retriever.PutttyTranslations}
-      "Radiant Translations"       -> {:ok, Retriever.RadiantTranslations}
-      "subudai11"                  -> {:ok, Retriever.Subudai11}
-      "Shiroyukineko Translations" -> {:ok, Retriever.ShiroyukinekoTranslations}
-      "Thyaeria"                   -> {:ok, Retriever.WuxiaWorld}
-      "Thyaeria's Translation"     -> {:ok, Retriever.WuxiaWorld}
-      "Translation Nations"        -> {:ok, Retriever.TranslationNations}
-      "volaretranslations"         -> {:ok, Retriever.VolareTranslations}
-      "weleltranslations"          -> {:ok, Retriever.WeleTranslations}
-      "Wuxiaworld"                 -> {:ok, Retriever.WuxiaWorld}
-      "XianXiaWorld"               -> {:ok, Retriever.XianXiaWorld}
-      "Yoraikun Translation"       -> {:ok, Retriever.YoraikunTranslation}
-      _                            -> {:error, "Translator unknown."}
+    cond do
+      translator =~ ~r/a0132/i                      -> {:ok, Retriever.WuxiaWorld}
+      translator =~ ~r/Alyschu/i                    -> {:ok, Retriever.WuxiaWorld}
+      translator =~ ~r/Aran/i                       -> {:ok, Retriever.AranTranslations}
+      translator =~ ~r/ChongMei/i                   -> {:ok, Retriever.ChongMeiTranslations}
+      translator =~ ~r/Dreams of Jianghu|wwyxhqc/i  -> {:ok, Retriever.DreamsOfJianghu}
+      translator =~ ~r/faktranslations/i            -> {:ok, Retriever.FakTranslations}
+      translator =~ ~r/Gravity Tales|gravitytales/i -> {:ok, Retriever.GravityTales}
+      translator =~ ~r/Lastvoice/i                  -> {:ok, Retriever.LastvoiceTranslator}
+      translator =~ ~r/Lesyt/i                      -> {:ok, Retriever.Lesyt}
+      translator =~ ~r/KobatoChanDaiSuki/i          -> {:ok, Retriever.KobatoChanDaiSuki}
+      translator =~ ~r/Myoniyoni/i                  -> {:ok, Retriever.MyoniyoniTranslations}
+      translator =~ ~r/novelsreborn/i               -> {:ok, Retriever.NovelsReborn}
+      translator =~ ~r/Novel\s*Saga/i               -> {:ok, Retriever.NovelSaga}
+      translator =~ ~r/otterspace(translation)*/i   -> {:ok, Retriever.OtterspaceTranslation}
+      translator =~ ~r/PiggyBottle/i                -> {:ok, Retriever.PiggyBottleTranslations}
+      translator =~ ~r/puttty(translations)*/i      -> {:ok, Retriever.PutttyTranslations}
+      translator =~ ~r/Radiant/i                    -> {:ok, Retriever.RadiantTranslations}
+      translator =~ ~r/subudai11/i                  -> {:ok, Retriever.Subudai11}
+      translator =~ ~r/Shiroyukineko/i              -> {:ok, Retriever.ShiroyukinekoTranslations}
+      translator =~ ~r/Thyaeria/i                   -> {:ok, Retriever.WuxiaWorld}
+      translator =~ ~r/Thyaeria's Translation/i     -> {:ok, Retriever.WuxiaWorld}
+      translator =~ ~r/Translation\s*Nations/i      -> {:ok, Retriever.TranslationNations}
+      translator =~ ~r/volaretranslations/i         -> {:ok, Retriever.VolareTranslations}
+      translator =~ ~r/weleltranslations/i          -> {:ok, Retriever.WeleTranslations}
+      translator =~ ~r/Wuxiaworld/i                 -> {:ok, Retriever.WuxiaWorld}
+      translator =~ ~r/XianXiaWorld/i               -> {:ok, Retriever.XianXiaWorld}
+      translator =~ ~r/Yoraikun/i                   -> {:ok, Retriever.YoraikunTranslation}
+      true                                          -> {:error, "Translator unknown."}
     end
   end
 
