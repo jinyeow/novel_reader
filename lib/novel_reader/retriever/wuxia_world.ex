@@ -5,8 +5,6 @@ defmodule NovelReader.Retriever.WuxiaWorld do
 
   import NovelReader.Helper
 
-  alias NovelReader.ChapterUpdate
-
   @base_url "https://www.wuxiaworld.com"
 
   # TODO Update this module similarly to GravityTales

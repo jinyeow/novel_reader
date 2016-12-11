@@ -112,20 +112,21 @@ defmodule NovelReader.NovelUpdates do
 
   def handle_call({:filter, attr, term}, _from, {_feed, chapters} = state) do
     {:ok, pattern} = Regex.compile(term, "i")
-    results = chapters
-              |> Enum.filter(fn chapter ->
-                  cond do
-                    chapter[attr] |> is_list ->
-                      case list = chapter[attr] do
-                        [] -> false
-                        _ ->
-                          for thing <- list do
-                            Regex.match?(pattern, thing)
-                          end
-                      end
-                    chapter[attr] |> is_binary -> Regex.match?(pattern, chapter[attr])
+    results =
+      chapters
+      |> Enum.filter(fn chapter ->
+          cond do
+            chapter[attr] |> is_list ->
+              case list = chapter[attr] do
+                [] -> false
+                _ ->
+                  for thing <- list do
+                    Regex.match?(pattern, thing)
                   end
-              end)
+              end
+            chapter[attr] |> is_binary -> Regex.match?(pattern, chapter[attr])
+          end
+      end)
     {:reply, results, state}
   end
 

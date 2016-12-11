@@ -13,5 +13,6 @@ defmodule NovelReader.Retriever.LastvoiceTranslator do
   # TODO
   defp find_content(page) do
     %HTTPoison.Response{body: body} = page
+    body
   end
 end

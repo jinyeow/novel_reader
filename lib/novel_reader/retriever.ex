@@ -109,9 +109,9 @@ defmodule NovelReader.Retriever do
     # If not in cache retrieve from web
     case Cache.get(title, chap) do
       {:ok, content} -> content
-      {:error, cache_error} ->
+      {:error, _} ->
         case retriever(chapter[:translator]) do
-          {:ok, retriever} -> retriever.get(chapter[:chapter_url])
+          {:ok, translator} -> translator.get(chapter[:chapter_url])
           error -> error
         end
     end
