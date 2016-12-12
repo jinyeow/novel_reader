@@ -3,18 +3,30 @@ defmodule NovelReader.Retriever.XianXiaWorld do
 
   @behaviour NovelReader.Retriever
 
+  import NovelReader.Helper
+
+  alias NovelReader.Chapter
+
   def get(url) do
-    case url |> HTTPoison.get([], [follow_redirect: true]) do
-      {:ok, page} -> find_content(page)
+    with {:ok, page} <- get_page(url) do
+      parse_chapter_page(page)
+    else
       {:error, reason} -> {:error, reason}
     end
   end
 
-  defp find_content(page) do
+  def parse_chapter_page(page) do
     %HTTPoison.Response{body: body} = page
-    {_tag, _attr, child} = body
-                           |> Floki.find("#content")
-                           |> hd
+    %Chapter{
+      content: get_content(body)
+    }
+  end
+
+  def get_content(body) do
+    {_tag, _attr, child} =
+      body
+      |> Floki.find("#content")
+      |> hd
 
     child
     |> Enum.filter(&is_binary/1)
