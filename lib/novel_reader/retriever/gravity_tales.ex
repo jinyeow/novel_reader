@@ -136,6 +136,5 @@ defmodule NovelReader.Retriever.GravityTales do
       |> Floki.attribute("href")
       |> hd
     @base_url <> prev
-
   end
 end

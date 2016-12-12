@@ -40,8 +40,8 @@ defmodule NovelReader.Retriever.WuxiaWorld do
       end
 
     cond do
-      ! (url =~ ~r/\/-index\//) -> :post
-      url =~ ~r/\/-index\/\/.+-chapter-/ -> :chapter
+      url =~ ~r/-index\/.+-chapter-/ -> :chapter
+      ! (url =~ ~r/-index\//) -> :post
       ! (url =~ ~r/-chapter-/) -> :novel
       :else -> {:error, "Unidentified page type."}
     end
@@ -68,7 +68,12 @@ defmodule NovelReader.Retriever.WuxiaWorld do
   def parse_chapter_page(page) do
     %HTTPoison.Response{body: body} = page
     %Chapter{
-      content: get_content(body)
+      content: get_content(body),
+      title: get_title(body),
+      chapter: get_chapter(body),
+      next: get_next(body),
+      prev: get_prev(body),
+      novel: get_novel(body)
     }
   end
 
@@ -79,5 +84,74 @@ defmodule NovelReader.Retriever.WuxiaWorld do
       |> hd
 
     Floki.DeepText.get(content, "\n")
+  end
+
+  def get_title(body) do
+    results =
+      case Floki.find(body, "div[itemprop='articleBody'] p b") do
+        [] -> Floki.find(body, "div[itemprop='articleBody'] p strong")
+        results -> results
+      end
+
+    results
+    |> hd
+    |> Floki.text
+    |> String.split(~r/[:\-] /, trim: true)
+    |> List.last
+  end
+
+  def get_chapter(body) do
+    results =
+      case Floki.find(body, "div[itemprop='articleBody'] p b") do
+        [] -> Floki.find(body, "div[itemprop='articleBody'] p strong")
+        results -> results
+      end
+
+    "Chapter " <> num =
+      results
+      |> hd
+      |> Floki.text
+      |> String.split(~r/[:\-] /, trim: true)
+      |> List.first
+
+    String.trim(num)
+  end
+
+  def get_next(body) do
+    case body
+    |> Floki.find("div[itemprop='articleBody'] p a")
+    |> Enum.filter(fn sel -> Floki.text(sel) =~ ~r/Next Chapter/ end)
+    |> Enum.uniq do
+      [] -> nil
+      list ->
+        list
+        |> hd
+        |> Floki.attribute("href")
+        |> hd
+    end
+  end
+
+  def get_prev(body) do
+    case body
+    |> Floki.find("div[itemprop='articleBody'] p a")
+    |> Enum.filter(fn sel -> Floki.text(sel) =~ ~r/Previous Chapter/ end)
+    |> Enum.uniq do
+      [] -> nil
+      list ->
+        list
+        |> hd
+        |> Floki.attribute("href")
+        |> hd
+    end
+  end
+
+  def get_novel(body) do
+    body
+    |> Floki.find("header h1.entry-title")
+    |> hd
+    |> Floki.text
+    |> String.split(" ")
+    |> hd
+    |> String.trim
   end
 end
