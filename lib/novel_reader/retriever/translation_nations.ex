@@ -66,7 +66,12 @@ defmodule NovelReader.Retriever.TranslationNations do
   def parse_chapter_page(page) do
     %HTTPoison.Response{body: body} = page
     %Chapter{
-      content: get_content(body)
+      content: get_content(body),
+      next: get_next(body),
+      prev: get_prev(body),
+      novel: get_novel(body),
+      title: get_title(body),
+      chapter: get_chapter(body)
     }
   end
 
@@ -77,5 +82,80 @@ defmodule NovelReader.Retriever.TranslationNations do
       |> hd
 
     Floki.DeepText.get(content, "\n")
+  end
+
+  def get_next(body) do
+    case body
+    |> Floki.find("div.entry-content p a")
+    |> Enum.filter(fn sel -> Floki.text(sel) =~ ~r/Next Chapter/ end)
+    |> Enum.uniq do
+      [] -> nil
+      list ->
+        list
+        |> hd
+        |> Floki.attribute("href")
+        |> hd
+    end
+  end
+
+  def get_prev(body) do
+    case body
+    |> Floki.find("div.entry-content p a")
+    |> Enum.filter(fn sel -> Floki.text(sel) =~ ~r/Previous Chapter/ end)
+    |> Enum.uniq do
+      [] -> nil
+      list ->
+        list
+        |> hd
+        |> Floki.attribute("href")
+        |> hd
+    end
+  end
+
+  def get_novel(body) do
+    novel_text=
+      body
+      |> Floki.find("h1.entry-title")
+      |> hd
+      |> Floki.text
+
+    Regex.named_captures(
+       ~r/(?<novel>\w+(\s[A-Za-z]+)+)( Volume [0-9]+)* Chapter [0-9]+/i,
+       novel_text
+    )["novel"]
+  end
+
+  def get_title(body) do
+    results =
+      case Floki.find(body, "div.entry-content p b") do
+        [] -> Floki.find(body, "div.entry-content p strong")
+        results -> results
+      end
+
+    results
+    |> hd
+    |> Floki.text
+    |> String.split(~r/[:\-–] /, trim: true)
+    |> List.last
+    |> String.trim
+  end
+
+  def get_chapter(body) do
+    results =
+      case Floki.find(body, "div.entry-content p b") do
+        [] -> Floki.find(body, "div.entry-content p strong")
+        results -> results
+      end
+
+    results
+    |> hd
+    |> Floki.text
+    |> String.split(~r/[:\-–] /, trim: true)
+    |> List.first
+    |> String.trim
+
+    # for some reason :chapter comes out as a binary
+    # To view it in string form, do:
+    #   Enum.join(for <<c::utf8 <- ss[:chapter]>>, do <<c::utf8>>)
   end
 end

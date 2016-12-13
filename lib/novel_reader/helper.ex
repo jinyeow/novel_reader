@@ -21,6 +21,7 @@ defmodule NovelReader.Helper do
 
   def status_code_error(code) do
     case code do
+      200 -> {:ok, "OK"}
       404 -> {:error, "File Not Found"}
       503 -> {:error, "Service Unavailable"}
       _ -> {:error, code}
