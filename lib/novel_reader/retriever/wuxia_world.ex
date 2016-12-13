@@ -107,12 +107,12 @@ defmodule NovelReader.Retriever.WuxiaWorld do
         results -> results
       end
 
-    "Chapter " <> num =
+    results =
       results
       |> hd
       |> Floki.text
-      |> String.split(~r/[:\-] /, trim: true)
-      |> List.first
+
+    %{"num" => num} = Regex.named_captures(~r/Chapter (?<num>[0-9]+)/, results)
 
     String.trim(num)
   end
