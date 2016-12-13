@@ -3,8 +3,6 @@ defmodule NovelReader.Chapter do
 
   @behaviour Access
 
-  alias __MODULE__
-
   defstruct [
     :chapter,
     :content,
@@ -16,7 +14,7 @@ defmodule NovelReader.Chapter do
 
   # next/prev either a url/file path
   # content most likely will be in HTML and will be converted later?
-  @type t :: %Chapter{
+  @type t :: %__MODULE__{
     chapter: String.t | non_neg_integer,
     content: String.t,
     next:    String.t,

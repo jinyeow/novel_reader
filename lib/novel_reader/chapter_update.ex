@@ -18,7 +18,7 @@ defmodule NovelReader.ChapterUpdate do
     :volume
   ]
 
-  @type t :: %ChapterUpdate{
+  @type t :: %__MODULE__{
     chapters:    [non_neg_integer],
     chapter_url: String.t,
     part:        non_neg_integer | nil,
