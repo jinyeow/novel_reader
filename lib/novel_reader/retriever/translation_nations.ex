@@ -135,7 +135,7 @@ defmodule NovelReader.Retriever.TranslationNations do
     results
     |> hd
     |> Floki.text
-    |> String.split(~r/[:\-–] /, trim: true)
+    |> String.split(~r/[:\-–]/, trim: true)
     |> List.last
     |> String.trim
   end
@@ -150,7 +150,7 @@ defmodule NovelReader.Retriever.TranslationNations do
     results
     |> hd
     |> Floki.text
-    |> String.split(~r/[:\-–] /, trim: true)
+    |> String.split(~r/[:\-–]/, trim: true)
     |> List.first
     |> String.trim
 

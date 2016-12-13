@@ -96,7 +96,7 @@ defmodule NovelReader.Retriever.WuxiaWorld do
     results
     |> hd
     |> Floki.text
-    |> String.split(~r/[:\-] /, trim: true)
+    |> String.split(~r/[:\-]/, trim: true)
     |> List.last
   end
 

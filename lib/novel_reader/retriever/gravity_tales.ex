@@ -102,7 +102,7 @@ defmodule NovelReader.Retriever.GravityTales do
     |> Floki.find("div.innerContent p")
     |> hd
     |> Floki.text
-    |> String.split(~r/[:\-] /, trim: true)
+    |> String.split(~r/[:\-]/, trim: true)
     |> List.last
   end
 
@@ -112,7 +112,7 @@ defmodule NovelReader.Retriever.GravityTales do
       |> Floki.find("div.innerContent p")
       |> hd
       |> Floki.text
-      |> String.split(~r/[:\-] /, trim: true)
+      |> String.split(~r/[:\-]/, trim: true)
       |> hd
 
     String.trim(num)
