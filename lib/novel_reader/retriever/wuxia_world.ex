@@ -86,26 +86,41 @@ defmodule NovelReader.Retriever.WuxiaWorld do
     Floki.DeepText.get(content, "\n")
   end
 
+  def find(_body, [], results), do: results
+  def find(body, [selector|tail], results) do
+    case Floki.find(body, selector) do
+      [] -> find(body, tail, results)
+      results -> results
+    end
+  end
+
   def get_title(body) do
-    results =
-      case Floki.find(body, "div[itemprop='articleBody'] p b") do
-        [] -> Floki.find(body, "div[itemprop='articleBody'] p strong")
-        results -> results
-      end
+    base_selector = "div[itemprop='articleBody']"
+    possible_title_selectors = [
+      base_selector <> " " <> "p b",
+      base_selector <> " " <> "p strong",
+      base_selector <> " " <> "strong"
+    ]
+
+    results = find(body, possible_title_selectors, [])
 
     results
     |> hd
     |> Floki.text
     |> String.split(~r/[:\-]/, trim: true)
     |> List.last
+    |> String.trim(" ")
   end
 
   def get_chapter(body) do
-    results =
-      case Floki.find(body, "div[itemprop='articleBody'] p b") do
-        [] -> Floki.find(body, "div[itemprop='articleBody'] p strong")
-        results -> results
-      end
+    base_selector = "div[itemprop='articleBody']"
+    possible_title_selectors = [
+      base_selector <> " " <> "p b",
+      base_selector <> " " <> "p strong",
+      base_selector <> " " <> "strong"
+    ]
+
+    results = find(body, possible_title_selectors, [])
 
     results =
       results

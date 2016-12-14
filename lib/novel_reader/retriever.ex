@@ -70,6 +70,8 @@ defmodule NovelReader.Retriever do
       case retriever(url) do
         {:ok, translator} ->
           chapter = translator.get(url)
+          # FIXME change Cache.add/2 to Cache.add/3 that takes
+          # novel, chapter, content as args.
           Cache.add(chapter[:title], chapter[:content])
           {:ok, chapter}
         {:error, reason} -> {:error, reason}
