@@ -12,7 +12,7 @@ defmodule NovelReader.Retriever do
       iex> NovelReader.Retriever.retriever("Gravity Tales")
       {:ok, NovelReader.Retriever.GravityTales}
       iex> NovelReader.Retriever.retriever("Some Fake Translations")
-      {:error, "Translator unknown."}
+      {:error, "Translator unknown [Some Fake Translations]."}
 
   """
 
@@ -115,7 +115,7 @@ defmodule NovelReader.Retriever do
       translator =~ ~r/Wuxiaworld/i                     -> {:ok, Retriever.WuxiaWorld}
       translator =~ ~r/XianXiaWorld/i                   -> {:ok, Retriever.XianXiaWorld}
       translator =~ ~r/Yoraikun/i                       -> {:ok, Retriever.YoraikunTranslation}
-      true                                              -> {:error, "Translator unknown."}
+      true                                              -> {:error, "Translator unknown [#{translator}]."}
     end
   end
 

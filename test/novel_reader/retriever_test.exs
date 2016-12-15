@@ -15,7 +15,7 @@ defmodule NovelReader.RetrieverTest do
     translator = "Some Unknown Tranlsator"
     ret        = Retriever.retriever(translator)
 
-    assert ret == {:error, "Translator unknown."}
+    assert ret == {:error, "Translator unknown [#{translator}]."}
   end
 
   @tag :pending
