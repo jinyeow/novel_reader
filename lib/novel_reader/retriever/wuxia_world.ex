@@ -48,19 +48,14 @@ defmodule NovelReader.Retriever.WuxiaWorld do
   end
 
   def parse_post_page(page) do
-    %HTTPoison.Response{body: body} = page
-
-    link =
-      body
-      |> Floki.find(".entry-content a")
-      |> Enum.filter(fn elem ->
-        elem
-        |> Floki.attribute("href")
-        |> hd =~ ~r/-chapter-[0-9]+/
-      end)
-      |> hd
-
-    link
+    page.body
+    |> Floki.find(".entry-content a")
+    |> Enum.filter(fn elem ->
+      elem
+      |> Floki.attribute("href")
+      |> hd =~ ~r/-chapter-[0-9]+/
+    end)
+    |> hd
     |> Floki.attribute("href")
     |> hd
   end
